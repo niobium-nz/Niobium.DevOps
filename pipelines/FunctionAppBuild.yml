@@ -53,6 +53,7 @@ stages:
         projects: '**/*.csproj'
         arguments: '--configuration Release --output $(Build.ArtifactStagingDirectory)'
         zipAfterPublish: true
+        publishWebProjects: false
         
     - publish: $(Build.ArtifactStagingDirectory)
       artifact: drop
