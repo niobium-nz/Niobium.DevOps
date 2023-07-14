@@ -12,7 +12,7 @@ stages:
 - template: FunctionAppBuild.yml
 - template: FunctionAppDeploy.yml
   parameters:
-      serviceConnectionId: ${{ serviceConnectionId }}
-      azureServiceConnection: ${{ azureServiceConnection }}
-      resourceGroupName: ${{ resourceGroupName }}
-      functionAppName: ${{ functionAppName }}
+      serviceConnectionId: ${{ parameters.serviceConnectionId }}
+      azureServiceConnection: ${{ parameters.azureServiceConnection }}
+      resourceGroupName: ${{ parameters.resourceGroupName }}
+      functionAppName: ${{ parameters.functionAppName }}

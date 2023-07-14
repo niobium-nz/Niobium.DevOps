@@ -29,21 +29,21 @@ stages:
             displayName: 'Infrastructure Provisioning'
             inputs:
               deploymentScope: 'Resource Group'
-              azureResourceManagerConnection: ${{ azureServiceConnection }}
+              azureResourceManagerConnection: ${{ parameters.azureServiceConnection }}
               action: 'Create Or Update Resource Group'
-              resourceGroupName: ${{ resourceGroupName }}
+              resourceGroupName: ${{ parameters.resourceGroupName }}
               location: '$(location)'
               templateLocation: 'Linked artifact'
               csmFile: '$(Pipeline.Workspace)/drop/$(templateFile)'
-              overrideParameters: '-appName ${{ functionAppName }}'
+              overrideParameters: '-appName ${{ parameters.functionAppName }}'
               deploymentMode: 'Incremental'
               deploymentName: 'DeployPipelineTemplate'
 
           - task: AzureFunctionApp@1
             displayName: 'Azure functions app deploy'
             inputs:
-              azureSubscription: ${{ serviceConnectionId }}
-              resourceGroupName: ${{ resourceGroupName }}
+              azureSubscription: ${{ parameters.serviceConnectionId }}
+              resourceGroupName: ${{ parameters.resourceGroupName }}
               appType: functionApp
-              appName: ${{ functionAppName }}
+              appName: ${{ parameters.functionAppName }}
               package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
