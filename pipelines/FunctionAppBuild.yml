@@ -54,11 +54,5 @@ stages:
         arguments: '--configuration Release --output $(Build.ArtifactStagingDirectory)'
         zipAfterPublish: true
         
-    - task: CopyFiles@2
-      displayName: 'Stage Bicep template'
-      inputs:
-        Contents: ../bicep/FunctionApp.bicep
-        TargetFolder: $(Build.ArtifactStagingDirectory)
-
     - publish: $(Build.ArtifactStagingDirectory)
       artifact: drop
