@@ -34,7 +34,7 @@ stages:
               resourceGroupName: ${{ parameters.resourceGroupName }}
               location: '$(location)'
               templateLocation: 'Linked artifact'
-              csmFile: '$(Pipeline.Workspace)/drop/$(templateFile)'
+              csmFile: '$(Build.SourcesDirectory)/bicep/FunctionApp.bicep'
               overrideParameters: '-appName ${{ parameters.functionAppName }}'
               deploymentMode: 'Incremental'
               deploymentName: 'DeployPipelineTemplate'
