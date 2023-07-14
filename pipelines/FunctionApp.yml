@@ -1,0 +1,18 @@
+parameters:
+- name: serviceConnectionId
+  type: string
+- name: azureServiceConnection
+  type: string
+- name: resourceGroupName
+  type: string
+- name: functionAppName
+  type: string
+
+stages:
+- template: FunctionAppBuild.yml
+- template: FunctionAppDeploy.yml
+  parameters:
+      serviceConnectionId: ${{ serviceConnectionId }}
+      azureServiceConnection: ${{ azureServiceConnection }}
+      resourceGroupName: ${{ resourceGroupName }}
+      functionAppName: ${{ functionAppName }}
