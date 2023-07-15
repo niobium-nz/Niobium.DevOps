@@ -29,16 +29,16 @@ stages:
     - task: AzureResourceManagerTemplateDeployment@3
     displayName: 'Infrastructure Provisioning'
     inputs:
-        deploymentScope: 'Resource Group'
-        azureResourceManagerConnection: ${{ parameters.azureServiceConnection }}
-        action: 'Create Or Update Resource Group'
-        resourceGroupName: ${{ parameters.resourceGroupName }}
-        location: '$(location)'
-        templateLocation: 'Linked artifact'
-        csmFile: '$(Build.SourcesDirectory)/bicep/FunctionApp.bicep'
-        overrideParameters: '-appName ${{ parameters.functionAppName }}'
-        deploymentMode: 'Incremental'
-        deploymentName: 'DeployPipelineTemplate'
+      deploymentScope: 'Resource Group'
+      azureResourceManagerConnection: ${{ parameters.azureServiceConnection }}
+      action: 'Create Or Update Resource Group'
+      resourceGroupName: ${{ parameters.resourceGroupName }}
+      location: '$(location)'
+      templateLocation: 'Linked artifact'
+      csmFile: '$(Build.SourcesDirectory)/bicep/FunctionApp.bicep'
+      overrideParameters: '-appName ${{ parameters.functionAppName }}'
+      deploymentMode: 'Incremental'
+      deploymentName: 'DeployPipelineTemplate'
 
   - deployment: Deploy
     displayName: Deploy
