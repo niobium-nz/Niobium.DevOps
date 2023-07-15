@@ -21,8 +21,24 @@ stages:
   condition: succeeded()
 
   jobs:
-  - job: Checkout
+  - job: Checkout DevOps
     steps: ${{ parameters.checkoutSteps }}
+
+  - job: Update Intrastructures
+    steps:
+    - task: AzureResourceManagerTemplateDeployment@3
+    displayName: 'Infrastructure Provisioning'
+    inputs:
+        deploymentScope: 'Resource Group'
+        azureResourceManagerConnection: ${{ parameters.azureServiceConnection }}
+        action: 'Create Or Update Resource Group'
+        resourceGroupName: ${{ parameters.resourceGroupName }}
+        location: '$(location)'
+        templateLocation: 'Linked artifact'
+        csmFile: '$(Build.SourcesDirectory)/bicep/FunctionApp.bicep'
+        overrideParameters: '-appName ${{ parameters.functionAppName }}'
+        deploymentMode: 'Incremental'
+        deploymentName: 'DeployPipelineTemplate'
 
   - deployment: Deploy
     displayName: Deploy
@@ -34,20 +50,6 @@ stages:
       runOnce:
         deploy:
           steps: 
-          - task: AzureResourceManagerTemplateDeployment@3
-            displayName: 'Infrastructure Provisioning'
-            inputs:
-              deploymentScope: 'Resource Group'
-              azureResourceManagerConnection: ${{ parameters.azureServiceConnection }}
-              action: 'Create Or Update Resource Group'
-              resourceGroupName: ${{ parameters.resourceGroupName }}
-              location: '$(location)'
-              templateLocation: 'Linked artifact'
-              csmFile: '$(Build.SourcesDirectory)/bicep/FunctionApp.bicep'
-              overrideParameters: '-appName ${{ parameters.functionAppName }}'
-              deploymentMode: 'Incremental'
-              deploymentName: 'DeployPipelineTemplate'
-
           - task: AzureFunctionApp@1
             displayName: 'Azure functions app deploy'
             inputs:
