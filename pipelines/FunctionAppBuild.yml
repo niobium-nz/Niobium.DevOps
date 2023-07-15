@@ -56,9 +56,18 @@ stages:
       inputs:
         command: 'publish'
         projects: '**/*.csproj'
-        arguments: '--configuration Release --output $(Build.ArtifactStagingDirectory)'
-        zipAfterPublish: true
+        arguments: '--configuration Release --output $(System.DefaultWorkingDirectory)/publish'
+        zipAfterPublish: false
         publishWebProjects: false
+
+    - task: ArchiveFiles@2
+      displayName: 'Archive'
+      inputs:
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish'
+        includeRootFolder: false
+        archiveType: zip
+        archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+        replaceExistingArchive: true
         
     - publish: $(Build.ArtifactStagingDirectory)
       artifact: drop
