@@ -9,6 +9,10 @@ parameters:
   type: string
 - name: buildAgentVmImage
   type: string
+  default: 'windows-latest'
+- name: checkoutSteps
+  type: stepList
+  default: []
 
 stages:
 - template: FunctionAppBuild.yml
@@ -22,3 +26,4 @@ stages:
       resourceGroupName: ${{ parameters.resourceGroupName }}
       functionAppName: ${{ parameters.functionAppName }}
       buildAgentVmImage: ${{ parameters.buildAgentVmImage }}
+      checkoutSteps: ${{ parameters.checkoutSteps }}

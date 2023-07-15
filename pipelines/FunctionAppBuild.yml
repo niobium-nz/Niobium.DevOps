@@ -1,6 +1,7 @@
 parameters:
 - name: buildAgentVmImage
   type: string
+  default: 'windows-latest'
 
 stages:
 - stage: Build

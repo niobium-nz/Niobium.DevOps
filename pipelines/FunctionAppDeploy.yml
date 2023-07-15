@@ -9,13 +9,10 @@ parameters:
   type: string
 - name: buildAgentVmImage
   type: string
-
-resources: 
-  repositories:
-  - repository: PipelineTemplates
-    type: git
-    name: cod/Cod.Infrastructures
-    ref: master
+  default: 'windows-latest'
+- name: checkoutSteps
+  type: stepList
+  default: []
 
 stages:
 - stage: Deploy
@@ -24,6 +21,9 @@ stages:
   condition: succeeded()
 
   jobs:
+  - job: Checkout
+    steps: ${{ parameters.checkoutSteps }}
+
   - deployment: Deploy
     displayName: Deploy
     environment: 'production'
@@ -33,9 +33,7 @@ stages:
     strategy:
       runOnce:
         deploy:
-          steps:
-          - checkout: PipelineTemplates
-  
+          steps: 
           - task: AzureResourceManagerTemplateDeployment@3
             displayName: 'Infrastructure Provisioning'
             inputs:
