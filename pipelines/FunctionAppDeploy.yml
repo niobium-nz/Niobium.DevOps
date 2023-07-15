@@ -41,6 +41,8 @@ stages:
 
   - deployment: Deploy
     displayName: Deploy
+    dependsOn: Intrastructures
+    condition: succeeded()
     environment: 'production'
     pool:
       vmImage: ${{ parameters.buildAgentVmImage }}
