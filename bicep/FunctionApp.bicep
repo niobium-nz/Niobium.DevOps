@@ -126,4 +126,4 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
   }
 }
 
-output functionAppName string = funcAppName
+output functionAppName string = functionApp.name

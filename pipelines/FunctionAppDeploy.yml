@@ -43,6 +43,7 @@ stages:
     - task: AzurePowerShell@4
       displayName: Extract Infrastructure Outputs
       inputs:
+        azureSubscription: ${{ parameters.serviceConnectionId }}
         scriptType: 'InlineScript'
         Inline: |
             $var=ConvertFrom-Json '$(infrastructureOutputs)'
