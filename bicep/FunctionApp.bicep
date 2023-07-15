@@ -13,7 +13,7 @@ param storageAccountType string = 'Standard_LRS'
 param location string = resourceGroup().location
 
 @description('Location for Application Insights')
-param appInsightsLocation string
+param appInsightsLocation string = resourceGroup().location
 
 @description('The language worker runtime to load in the function app.')
 @allowed([
