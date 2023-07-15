@@ -7,6 +7,8 @@ parameters:
   type: string
 - name: functionAppName
   type: string
+- name: buildAgentVmImage
+  type: string
 
 stages:
 - stage: Deploy
@@ -19,12 +21,14 @@ stages:
     displayName: Deploy
     environment: 'production'
     pool:
-      vmImage: windows-latest
+      vmImage: ${{ parameters.buildAgentVmImage }}
 
     strategy:
       runOnce:
         deploy:
           steps:
+          - checkout: self
+  
           - task: AzureResourceManagerTemplateDeployment@3
             displayName: 'Infrastructure Provisioning'
             inputs:

@@ -7,12 +7,18 @@ parameters:
   type: string
 - name: functionAppName
   type: string
+- name: buildAgentVmImage
+  type: string
 
 stages:
 - template: FunctionAppBuild.yml
+  parameters:
+      buildAgentVmImage: ${{ parameters.buildAgentVmImage }}
+
 - template: FunctionAppDeploy.yml
   parameters:
       serviceConnectionId: ${{ parameters.serviceConnectionId }}
       azureServiceConnection: ${{ parameters.azureServiceConnection }}
       resourceGroupName: ${{ parameters.resourceGroupName }}
       functionAppName: ${{ parameters.functionAppName }}
+      buildAgentVmImage: ${{ parameters.buildAgentVmImage }}

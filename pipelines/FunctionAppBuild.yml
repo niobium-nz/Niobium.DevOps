@@ -1,3 +1,7 @@
+parameters:
+- name: buildAgentVmImage
+  type: string
+
 stages:
 - stage: Build
   displayName: Build stage
@@ -6,7 +10,7 @@ stages:
   - job: Build
     displayName: Build
     pool:
-      vmImage: windows-latest
+      vmImage: ${{ parameters.buildAgentVmImage }}
 
     steps:
     - task: UseDotNet@2
