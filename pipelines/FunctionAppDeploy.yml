@@ -39,6 +39,17 @@ stages:
         deploymentMode: 'Incremental'
         deploymentName: 'DeployPipelineTemplate'
         deploymentOutputs: 'infrastructureOutputs'
+        
+    - task: AzurePowerShell@4
+      displayName: Extract Infrastructure Outputs
+      inputs:
+        scriptType: 'InlineScript'
+        Inline: |
+            $var=ConvertFrom-Json '$(infrastructureOutputs)'
+            $value=$var.functionAppName.value
+            Write-Host "##vso[task.setvariable variable=functionAppName;]$value"
+        azurePowerShellVersion: 'latestVersion'
+        pwsh: true
 
   - deployment: Deploy
     displayName: Deploy
@@ -58,5 +69,5 @@ stages:
               azureSubscription: ${{ parameters.serviceConnectionId }}
               resourceGroupName: ${{ parameters.resourceGroupName }}
               appType: functionApp
-              appName: $(infrastructureOutputs.functionAppName)
+              appName: $(functionAppName)
               package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
