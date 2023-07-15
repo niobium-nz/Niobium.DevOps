@@ -10,9 +10,10 @@ parameters:
 - name: buildAgentVmImage
   type: string
   default: 'windows-latest'
-- name: checkoutSteps
-  type: stepList
-  default: []
+- name: checkoutDevopsStep
+  type: step
+  default:
+    script: echo dummy step
 
 stages:
 - stage: Deploy
@@ -21,11 +22,9 @@ stages:
   condition: succeeded()
 
   jobs:
-  - job: Checkout
-    steps: ${{ parameters.checkoutSteps }}
-
   - job: Intrastructures
     steps:
+    - ${{ parameters.checkoutDevopsStep }}
     - task: AzureResourceManagerTemplateDeployment@3
       displayName: 'Infrastructure Provisioning'
       inputs:
