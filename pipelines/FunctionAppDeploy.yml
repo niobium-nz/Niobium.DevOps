@@ -22,7 +22,7 @@ stages:
   condition: succeeded()
 
   jobs:
-  - job: Infrastructures
+  - job: Infrastructure
     steps:
     - ${{ parameters.checkoutDevopsStep }}
     - task: AzureResourceManagerTemplateDeployment@3
@@ -42,7 +42,7 @@ stages:
 
   - deployment: Deploy
     displayName: Deploy
-    dependsOn: Intrastructures
+    dependsOn: Infrastructure
     condition: succeeded()
     environment: 'production'
     pool:
