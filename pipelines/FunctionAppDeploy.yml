@@ -39,18 +39,12 @@ stages:
         deploymentMode: 'Incremental'
         deploymentName: 'DeployPipelineTemplate'
         deploymentOutputs: 'infrastructureOutputs'
-        
-    - task: AzurePowerShell@4
-      displayName: Extract Infrastructure Outputs
-      inputs:
-        azureSubscription: ${{ parameters.serviceConnectionId }}
-        scriptType: 'InlineScript'
-        Inline: |
-            $var=ConvertFrom-Json '$(infrastructureOutputs)'
-            $value=$var.functionAppName.value
-            Write-Host "##vso[task.setvariable variable=functionAppName;]$value"
-        azurePowerShellVersion: 'latestVersion'
-        pwsh: true
+    
+    - powershell: |
+        $var=ConvertFrom-Json '$(infrastructureOutputs)'
+        $value=$var.functionAppName.value
+        Write-Host "##vso[task.setvariable variable=functionAppName;isoutput=true]$value"
+      name: passInfrastructureOutputs
 
   - deployment: Deploy
     displayName: Deploy
@@ -59,6 +53,8 @@ stages:
     environment: 'production'
     pool:
       vmImage: ${{ parameters.buildAgentVmImage }}
+    variables:
+      functionAppName: $[ dependencies.Infrastructure.outputs['passInfrastructureOutputs.functionAppName'] ]  
 
     strategy:
       runOnce:
