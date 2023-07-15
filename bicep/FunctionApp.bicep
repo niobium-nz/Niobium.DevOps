@@ -12,9 +12,6 @@ param storageAccountType string = 'Standard_LRS'
 @description('Location for all resources.')
 param location string = resourceGroup().location
 
-@description('Location for Application Insights')
-param appInsightsLocation string = resourceGroup().location
-
 @description('The language worker runtime to load in the function app.')
 @allowed([
   'dotnet'
@@ -28,6 +25,7 @@ param runtime string = 'dotnet-isolated'
 var functionAppName = '${appName}Func'
 var hostingPlanName = '${appName}Plan'
 var applicationInsightsName = '${appName}Insights'
+var logAnalyticsWorkspaceName = '${appName}Logs'
 var storageAccountName = toLower('${appName}Store')
 var functionWorkerRuntime = runtime
 
@@ -101,12 +99,29 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
   }
 }
 
+resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-06-01' = {
+  name: logAnalyticsWorkspaceName
+  location: location
+  properties: {
+    sku: {
+      name: 'PerGB2018'
+    }
+    workspaceCapping: {
+	  dailyQuotaGb: 1
+    }
+    retentionInDays: 30
+    publicNetworkAccessForIngestion: 'Enabled'
+    publicNetworkAccessForQuery: 'Enabled'
+  }
+}
+
 resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
   name: applicationInsightsName
-  location: appInsightsLocation
+  location: location
   kind: 'web'
   properties: {
     Application_Type: 'web'
-    Request_Source: 'rest'
+    WorkspaceResourceId: logAnalyticsWorkspace.id
+    Flow_Type: 'Bluefield'
   }
 }
