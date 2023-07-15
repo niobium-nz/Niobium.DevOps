@@ -1,5 +1,5 @@
 @description('The name of the function app that you wish to create.')
-param appName string = 'fnapp${uniqueString(resourceGroup().id)}'
+param appNamePrefix string = 'fnapp${uniqueString(resourceGroup().id)}'
 
 @description('Storage Account type')
 @allowed([
@@ -22,11 +22,11 @@ param location string = resourceGroup().location
 ])
 param runtime string = 'dotnet-isolated'
 
-var functionAppName = '${appName}Func'
-var hostingPlanName = '${appName}Plan'
-var applicationInsightsName = '${appName}Insights'
-var logAnalyticsWorkspaceName = '${appName}Logs'
-var storageAccountName = toLower('${appName}Store')
+var funcAppName = '${appNamePrefix}Func'
+var hostingPlanName = '${appNamePrefix}Plan'
+var applicationInsightsName = '${appNamePrefix}Insights'
+var logAnalyticsWorkspaceName = '${appNamePrefix}Logs'
+var storageAccountName = toLower('${appNamePrefix}Store')
 var functionWorkerRuntime = runtime
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-05-01' = {
@@ -53,7 +53,7 @@ resource hostingPlan 'Microsoft.Web/serverfarms@2021-03-01' = {
 }
 
 resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
-  name: functionAppName
+  name: funcAppName
   location: location
   kind: 'functionapp'
   identity: {
@@ -73,7 +73,7 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
         }
         {
           name: 'WEBSITE_CONTENTSHARE'
-          value: toLower(functionAppName)
+          value: toLower(funcAppName)
         }
         {
           name: 'FUNCTIONS_EXTENSION_VERSION'
@@ -125,3 +125,5 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
     Flow_Type: 'Bluefield'
   }
 }
+
+output functionAppName string = funcAppName

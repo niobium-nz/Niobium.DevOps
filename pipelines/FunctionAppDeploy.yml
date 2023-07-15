@@ -5,7 +5,7 @@ parameters:
   type: string
 - name: resourceGroupName
   type: string
-- name: functionAppName
+- name: appNamePrefix
   type: string
 - name: buildAgentVmImage
   type: string
@@ -22,7 +22,7 @@ stages:
   condition: succeeded()
 
   jobs:
-  - job: Intrastructures
+  - job: Infrastructures
     steps:
     - ${{ parameters.checkoutDevopsStep }}
     - task: AzureResourceManagerTemplateDeployment@3
@@ -35,9 +35,10 @@ stages:
         location: '$(location)'
         templateLocation: 'Linked artifact'
         csmFile: '$(Build.SourcesDirectory)/bicep/FunctionApp.bicep'
-        overrideParameters: '-appName ${{ parameters.functionAppName }}'
+        overrideParameters: '-appNamePrefix ${{ parameters.appNamePrefix }}'
         deploymentMode: 'Incremental'
         deploymentName: 'DeployPipelineTemplate'
+        deploymentOutputs: 'infrastructureOutputs'
 
   - deployment: Deploy
     displayName: Deploy
@@ -57,5 +58,5 @@ stages:
               azureSubscription: ${{ parameters.serviceConnectionId }}
               resourceGroupName: ${{ parameters.resourceGroupName }}
               appType: functionApp
-              appName: ${{ parameters.functionAppName }}
+              appName: $(infrastructureOutputs.functionAppName)
               package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
