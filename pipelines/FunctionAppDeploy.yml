@@ -21,10 +21,10 @@ stages:
   condition: succeeded()
 
   jobs:
-  - job: Checkout DevOps
+  - job: Checkout
     steps: ${{ parameters.checkoutSteps }}
 
-  - job: Update Intrastructures
+  - job: Intrastructures
     steps:
     - task: AzureResourceManagerTemplateDeployment@3
       displayName: 'Infrastructure Provisioning'
