@@ -19,18 +19,18 @@ stages:
 - stage: Build
   jobs:
   - template: jobs/FunctionAppBuild.yml
-  parameters:
-    buildAgentVmImage: ${{ parameters.buildAgentVmImage }}
+    parameters:
+      buildAgentVmImage: ${{ parameters.buildAgentVmImage }}
 
 - stage: Deploy
   dependsOn: Build
   condition: succeeded()
   jobs:
   - template: jobs/FunctionAppDeploy.yml
-  parameters:
-    serviceConnectionId: ${{ parameters.serviceConnectionId }}
-    azureServiceConnection: ${{ parameters.azureServiceConnection }}
-    resourceGroupName: ${{ parameters.resourceGroupName }}
-    appNamePrefix: ${{ parameters.appNamePrefix }}
-    buildAgentVmImage: ${{ parameters.buildAgentVmImage }}
-    checkoutDevopsStep: ${{ parameters.checkoutDevopsStep }}
+    parameters:
+      serviceConnectionId: ${{ parameters.serviceConnectionId }}
+      azureServiceConnection: ${{ parameters.azureServiceConnection }}
+      resourceGroupName: ${{ parameters.resourceGroupName }}
+      appNamePrefix: ${{ parameters.appNamePrefix }}
+      buildAgentVmImage: ${{ parameters.buildAgentVmImage }}
+      checkoutDevopsStep: ${{ parameters.checkoutDevopsStep }}
