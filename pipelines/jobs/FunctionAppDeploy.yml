@@ -41,25 +41,25 @@ jobs:
       Write-Host "##vso[task.setvariable variable=functionAppName;isoutput=true]$value"
     name: passInfrastructureOutputs
 
-  - deployment: Deploy
-    displayName: Deploy
-    dependsOn: Infrastructure
-    condition: succeeded()
-    environment: 'production'
-    pool:
-      vmImage: ${{ parameters.buildAgentVmImage }}
-    variables:
-      functionAppName: $[ dependencies.Infrastructure.outputs['passInfrastructureOutputs.functionAppName'] ]  
+- deployment: Deploy
+  displayName: Deploy
+  dependsOn: Infrastructure
+  condition: succeeded()
+  environment: 'production'
+  pool:
+    vmImage: ${{ parameters.buildAgentVmImage }}
+  variables:
+    functionAppName: $[ dependencies.Infrastructure.outputs['passInfrastructureOutputs.functionAppName'] ]  
 
-    strategy:
-      runOnce:
+  strategy:
+    runOnce:
       deploy:
-      steps: 
-      - task: AzureFunctionApp@1
-        displayName: 'Azure functions app deploy'
-        inputs:
-          azureSubscription: ${{ parameters.serviceConnectionId }}
-          resourceGroupName: ${{ parameters.resourceGroupName }}
-          appType: functionApp
-          appName: $(functionAppName)
-          package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
+        steps: 
+        - task: AzureFunctionApp@1
+          displayName: 'Azure functions app deploy'
+          inputs:
+            azureSubscription: ${{ parameters.serviceConnectionId }}
+            resourceGroupName: ${{ parameters.resourceGroupName }}
+            appType: functionApp
+            appName: $(functionAppName)
+            package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
