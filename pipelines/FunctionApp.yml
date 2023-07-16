@@ -16,15 +16,21 @@ parameters:
     script: echo dummy step
 
 stages:
-- template: FunctionAppBuild.yml
+- stage: Build
+  jobs:
+  - template: jobs/FunctionAppBuild.yml
   parameters:
-      buildAgentVmImage: ${{ parameters.buildAgentVmImage }}
+    buildAgentVmImage: ${{ parameters.buildAgentVmImage }}
 
-- template: FunctionAppDeploy.yml
+- stage: Deploy
+  dependsOn: Build
+  condition: succeeded()
+  jobs:
+  - template: jobs/FunctionAppDeploy.yml
   parameters:
-      serviceConnectionId: ${{ parameters.serviceConnectionId }}
-      azureServiceConnection: ${{ parameters.azureServiceConnection }}
-      resourceGroupName: ${{ parameters.resourceGroupName }}
-      appNamePrefix: ${{ parameters.appNamePrefix }}
-      buildAgentVmImage: ${{ parameters.buildAgentVmImage }}
-      checkoutDevopsStep: ${{ parameters.checkoutDevopsStep }}
+    serviceConnectionId: ${{ parameters.serviceConnectionId }}
+    azureServiceConnection: ${{ parameters.azureServiceConnection }}
+    resourceGroupName: ${{ parameters.resourceGroupName }}
+    appNamePrefix: ${{ parameters.appNamePrefix }}
+    buildAgentVmImage: ${{ parameters.buildAgentVmImage }}
+    checkoutDevopsStep: ${{ parameters.checkoutDevopsStep }}
