@@ -1,0 +1,11 @@
+parameters:
+- name: inputJSONValue
+  type: string
+- name: outputVariableName
+  type: string  
+
+steps:
+- powershell: |
+    $var=ConvertFrom-Json '${{ parameters.inputJSONValue }}'
+    foreach ($kv in $json.PSObject.Properties) { Write-Host "##vso[task.setvariable variable=$($kv.Name);isOutput=true]$($kv.Value)" }
+  name: ${{ parameters.outputVariableName }}

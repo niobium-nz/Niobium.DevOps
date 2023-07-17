@@ -35,11 +35,10 @@ jobs:
       deploymentName: 'DeployPipelineTemplate'
       deploymentOutputs: 'infrastructureProvisioningResult'
 
-  - powershell: |
-      $var=ConvertFrom-Json '$(infrastructureProvisioningResult)'
-      $value=$var.functionAppName.value
-      Write-Host "##vso[task.setvariable variable=functionAppName;isOutput=true]$value"
-    name: infrastructureOutputs
+  - template: ../steps/parseBicepResult.yml
+    parameters:
+      inputJSONValue: '$(infrastructureProvisioningResult)'
+      outputVariableName: 'infrastructureOutputs'
 
 - deployment: Deploy
   displayName: Deploy
