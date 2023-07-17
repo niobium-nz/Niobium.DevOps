@@ -140,8 +140,10 @@ module keyVault 'modules/key-vault.bicep' = if (enableKeyVault) {
 }
 
 output functionAppName string = functionApp.name
+output functionAppHostname string = functionApp.properties.defaultHostName
 output hostingPlanName string = hostingPlan.name
 output storageAccountName string = storageAccount.name
 output applicationInsightsName string = applicationInsights.name
 output logAnalyticsWorkspaceName string = logAnalyticsWorkspace.name
-output keyVaultName string = inputKeyVaultName
+output keyVaultName string = keyVault.outputs.keyVaultName
+output keyVaultUrl string = keyVault.outputs.keyVaultUrl
