@@ -5,7 +5,12 @@ parameters:
   type: string  
 
 steps:
-- powershell: |
-    $var=ConvertFrom-Json '${{ parameters.inputJSONValue }}'
-    foreach ($kv in $json.PSObject.Properties) { Write-Host "##vso[task.setvariable variable=$($kv.Name);isOutput=true]$($kv.Value)" }
+- pwsh: |
+    $armOutputObj = '${{ parameters.inputJSONValue }}' | ConvertFrom-Json
+    $armOutputObj.PSObject.Properties | ForEach-Object {
+      $keyname = $_.Name
+      $value = $_.Value.value
+      Write-Output "##vso[task.setvariable variable=$keyName;]$value"
+      Write-Output "##vso[task.setvariable variable=$keyName;isOutput=true]$value"
+    }
   name: ${{ parameters.outputVariableName }}
