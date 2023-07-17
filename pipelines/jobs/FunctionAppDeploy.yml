@@ -33,7 +33,9 @@ jobs:
       location: '$(location)'
       templateLocation: 'Linked artifact'
       csmFile: '$(Build.SourcesDirectory)/bicep/FunctionApp.bicep'
-      overrideParameters: '-appNamePrefix ${{ parameters.appNamePrefix }} -enableKeyVault ${{ parameters.enableKeyVault }}'
+      overrideParameters: >-
+        -appNamePrefix ${{ parameters.appNamePrefix }}
+        -enableKeyVault ${{ parameters.enableKeyVault }}
       deploymentMode: 'Incremental'
       deploymentName: 'DeployPipelineTemplate'
       deploymentOutputs: 'infrastructureProvisioningResult'
