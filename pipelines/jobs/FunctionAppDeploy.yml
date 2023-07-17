@@ -35,7 +35,7 @@ jobs:
       csmFile: '$(Build.SourcesDirectory)/bicep/FunctionApp.bicep'
       overrideParameters: >-
         -appNamePrefix ${{ parameters.appNamePrefix }}
-        -enableKeyVault ${{ parameters.enableKeyVault }}
+        -enableKeyVault $[convertToJson(${{ parameters.enableKeyVault }})]
       deploymentMode: 'Incremental'
       deploymentName: 'DeployPipelineTemplate'
       deploymentOutputs: 'infrastructureProvisioningResult'
