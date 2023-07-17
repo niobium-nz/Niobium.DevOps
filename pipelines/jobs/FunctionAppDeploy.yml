@@ -18,9 +18,6 @@ parameters:
   type: boolean
   default: false
 
-variables:
-  isKeyVaultEnabled: ${{ convertToJson(parameters.enableKeyVault) }}
-
 jobs:
 - job: Infrastructure
   steps:
@@ -38,7 +35,7 @@ jobs:
       csmFile: '$(Build.SourcesDirectory)/bicep/FunctionApp.bicep'
       overrideParameters: >-
         -appNamePrefix ${{ parameters.appNamePrefix }}
-        -enableKeyVault $(isKeyVaultEnabled)
+        -enableKeyVault ${{ convertToJson(parameters.enableKeyVault) }}
       deploymentMode: 'Incremental'
       deploymentName: 'DeployPipelineTemplate'
       deploymentOutputs: 'infrastructureProvisioningResult'
