@@ -15,7 +15,7 @@ parameters:
   default:
     script: echo dummy step
 - name: enableKeyVault
-  type: bool
+  type: boolean
   default: false
 
 stages:
