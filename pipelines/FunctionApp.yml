@@ -14,6 +14,9 @@ parameters:
   type: step
   default:
     script: echo dummy step
+- name: enableKeyVault
+  type: bool
+  default: false
 
 stages:
 - stage: Build
@@ -34,3 +37,4 @@ stages:
       appNamePrefix: ${{ parameters.appNamePrefix }}
       buildAgentVmImage: ${{ parameters.buildAgentVmImage }}
       checkoutDevopsStep: ${{ parameters.checkoutDevopsStep }}
+      enableKeyVault: ${{ parameters.enableKeyVault }}

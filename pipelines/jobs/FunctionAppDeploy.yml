@@ -14,6 +14,9 @@ parameters:
   type: step
   default:
     script: echo dummy step
+- name: enableKeyVault
+  type: bool
+  default: false
 
 jobs:
 - job: Infrastructure
@@ -30,7 +33,7 @@ jobs:
       location: '$(location)'
       templateLocation: 'Linked artifact'
       csmFile: '$(Build.SourcesDirectory)/bicep/FunctionApp.bicep'
-      overrideParameters: '-appNamePrefix ${{ parameters.appNamePrefix }}'
+      overrideParameters: '-appNamePrefix ${{ parameters.appNamePrefix }} -enableKeyVault ${{ parameters.enableKeyVault }}'
       deploymentMode: 'Incremental'
       deploymentName: 'DeployPipelineTemplate'
       deploymentOutputs: 'infrastructureProvisioningResult'

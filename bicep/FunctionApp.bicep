@@ -22,15 +22,19 @@ param location string = resourceGroup().location
 ])
 param runtime string = 'dotnet-isolated'
 
-var funcAppName = '${appNamePrefix}Func'
-var hostingPlanName = '${appNamePrefix}Plan'
-var applicationInsightsName = '${appNamePrefix}Insights'
-var logAnalyticsWorkspaceName = '${appNamePrefix}Logs'
-var storageAccountName = toLower('${appNamePrefix}Store')
+@description('Whether to deploy KeyVault.')
+param enableKeyVault bool = false
+
+var inputFuncAppName = '${appNamePrefix}Func'
+var inputHostingPlanName = '${appNamePrefix}Plan'
+var inputApplicationInsightsName = '${appNamePrefix}Insights'
+var inputLogAnalyticsWorkspaceName = '${appNamePrefix}Logs'
+var inputStorageAccountName = toLower('${appNamePrefix}Store')
+var inputKeyVaultName = '${appNamePrefix}Vault'
 var functionWorkerRuntime = runtime
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-05-01' = {
-  name: storageAccountName
+  name: inputStorageAccountName
   location: location
   sku: {
     name: storageAccountType
@@ -43,7 +47,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-05-01' = {
 }
 
 resource hostingPlan 'Microsoft.Web/serverfarms@2021-03-01' = {
-  name: hostingPlanName
+  name: inputHostingPlanName
   location: location
   sku: {
     name: 'Y1'
@@ -53,7 +57,7 @@ resource hostingPlan 'Microsoft.Web/serverfarms@2021-03-01' = {
 }
 
 resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
-  name: funcAppName
+  name: inputFuncAppName
   location: location
   kind: 'functionapp'
   identity: {
@@ -65,15 +69,15 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
       appSettings: [
         {
           name: 'AzureWebJobsStorage'
-          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${inputStorageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
         }
         {
           name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
-          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${inputStorageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
         }
         {
           name: 'WEBSITE_CONTENTSHARE'
-          value: toLower(funcAppName)
+          value: toLower(inputFuncAppName)
         }
         {
           name: 'FUNCTIONS_EXTENSION_VERSION'
@@ -100,7 +104,7 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
 }
 
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-06-01' = {
-  name: logAnalyticsWorkspaceName
+  name: inputLogAnalyticsWorkspaceName
   location: location
   properties: {
     sku: {
@@ -116,7 +120,7 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-06
 }
 
 resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
-  name: applicationInsightsName
+  name: inputApplicationInsightsName
   location: location
   kind: 'web'
   properties: {
@@ -126,4 +130,18 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
   }
 }
 
+module keyVault 'modules/key-vault.bicep' = if (enableKeyVault) {
+  name: 'keyVault'
+  params: {
+    location: location
+    keyVaultName: inputKeyVaultName
+    readerPrincipalId: functionApp.identity.principalId
+  }
+}
+
 output functionAppName string = functionApp.name
+output hostingPlanName string = hostingPlan.name
+output storageAccountName string = storageAccount.name
+output applicationInsightsName string = applicationInsights.name
+output logAnalyticsWorkspaceName string = logAnalyticsWorkspace.name
+output keyVaultName string = inputKeyVaultName
