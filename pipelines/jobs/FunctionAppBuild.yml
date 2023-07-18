@@ -2,6 +2,9 @@ parameters:
 - name: buildAgentVmImage
   type: string
   default: 'windows-latest'
+- name: projectToPublish
+  type: string
+  default: '**/*.csproj'
 
 jobs:
 - job: Build
@@ -50,10 +53,11 @@ jobs:
     displayName: Publish
     inputs:
       command: 'publish'
-      projects: '**/*.csproj'
+      projects: $(projectToPublish)
       arguments: '--configuration Release --output $(System.DefaultWorkingDirectory)/publish/'
       zipAfterPublish: false
       publishWebProjects: false
+      modifyOutputPath: false
 
   - task: ArchiveFiles@2
     displayName: 'Archive'
