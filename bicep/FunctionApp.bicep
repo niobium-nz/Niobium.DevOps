@@ -25,6 +25,9 @@ param runtime string = 'dotnet-isolated'
 @description('Whether to deploy KeyVault.')
 param enableKeyVault bool = false
 
+@description('Whether to enable staging deployment slot.')
+param enableStagingSlot bool = false
+
 var inputFuncAppName = '${appNamePrefix}Func'
 var inputHostingPlanName = '${appNamePrefix}Plan'
 var inputApplicationInsightsName = '${appNamePrefix}Insights'
@@ -56,7 +59,7 @@ resource hostingPlan 'Microsoft.Web/serverfarms@2021-03-01' = {
   properties: {}
 }
 
-resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
+resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
   name: inputFuncAppName
   location: location
   kind: 'functionapp'
@@ -100,6 +103,19 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
       minTlsVersion: '1.2'
     }
     httpsOnly: true
+  }
+}
+
+resource functionAppStagingSlot 'Microsoft.Web/sites/slots@2022-03-01' = {
+  parent: functionApp
+  name: 'staging'
+  location: location
+  kind: 'functionapp'
+  identity: {
+    type: 'SystemAssigned'
+  }
+  properties: {
+    serverFarmId: hostingPlan.id
   }
 }
 
