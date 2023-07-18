@@ -51,7 +51,7 @@ jobs:
     inputs:
       command: 'publish'
       projects: '**/*.csproj'
-      arguments: '--configuration Release --output $(System.DefaultWorkingDirectory)/publish'
+      arguments: '--configuration Release --output $(System.DefaultWorkingDirectory)/publish/'
       zipAfterPublish: false
       publishWebProjects: false
 
