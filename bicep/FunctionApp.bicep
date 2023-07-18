@@ -144,6 +144,7 @@ output functionAppHostname string = functionApp.properties.defaultHostName
 output hostingPlanName string = hostingPlan.name
 output storageAccountName string = storageAccount.name
 output applicationInsightsName string = applicationInsights.name
+output applicationInsightsInstrumentationKey string = applicationInsights.properties.InstrumentationKey
 output logAnalyticsWorkspaceName string = logAnalyticsWorkspace.name
 output keyVaultName string = keyVault.outputs.keyVaultName
 output keyVaultUrl string = keyVault.outputs.keyVaultUrl
