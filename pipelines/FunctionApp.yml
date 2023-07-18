@@ -17,6 +17,9 @@ parameters:
 - name: enableKeyVault
   type: boolean
   default: false
+- name: projectToPublish
+  type: string
+  default: '**/*.csproj'
 
 stages:
 - stage: Build
@@ -24,6 +27,7 @@ stages:
   - template: jobs/FunctionAppBuild.yml
     parameters:
       buildAgentVmImage: ${{ parameters.buildAgentVmImage }}
+      projectToPublish: ${{ parameters.projectToPublish }}
 
 - stage: Deploy
   dependsOn: Build
