@@ -17,6 +17,9 @@ parameters:
 - name: enableKeyVault
   type: boolean
   default: false
+- name: enableStagingSlot
+  type: boolean
+  default: false
 
 jobs:
 - job: Infrastructure
@@ -36,6 +39,7 @@ jobs:
       overrideParameters: >-
         -appNamePrefix ${{ parameters.appNamePrefix }}
         -enableKeyVault ${{ convertToJson(parameters.enableKeyVault) }}
+        -enableStagingSlot ${{ convertToJson(parameters.enableStagingSlot) }}
       deploymentMode: 'Incremental'
       deploymentName: 'DeployPipelineTemplate'
       deploymentOutputs: 'infrastructureProvisioningResult'
@@ -59,11 +63,30 @@ jobs:
     runOnce:
       deploy:
         steps: 
-        - task: AzureFunctionApp@1
-          displayName: 'Azure functions app deploy'
+        - script: echo '##vso[task.setvariable variable=slotName]production'
+          displayName: "Deploy to Production"
+          condition: eq(parameters.enableStagingSlot, false)
+
+        - script: echo '##vso[task.setvariable variable=slotName]staging'
+          displayName: "Deploy to Staging"
+          condition: eq(parameters.enableStagingSlot, true)
+
+        - task: AzureFunctionApp@2
+          displayName: 'Functions Deploy'
           inputs:
             azureSubscription: ${{ parameters.serviceConnectionId }}
             resourceGroupName: ${{ parameters.resourceGroupName }}
             appType: functionApp
             appName: $(functionAppName)
+            slotName: $(slotName)
+            deployToSlotOrASE: ${{ parameters.enableStagingSlot }}
             package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
+
+        - task: AzureAppServiceManage@0
+          condition: eq(parameters.enableStagingSlot, true)
+          inputs:
+            azureSubscription: ${{ parameters.serviceConnectionId }}
+            ResourceGroupName: ${{ parameters.resourceGroupName }}
+            WebAppName: $(functionAppName)
+            SourceSlot: staging
+            SwapWithProduction: true
