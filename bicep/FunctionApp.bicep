@@ -106,7 +106,7 @@ resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
   }
 }
 
-resource functionAppStagingSlot 'Microsoft.Web/sites/slots@2022-03-01' = {
+resource functionAppStagingSlot 'Microsoft.Web/sites/slots@2022-03-01' = if (enableStagingSlot) {
   parent: functionApp
   name: 'staging'
   location: location
