@@ -65,11 +65,11 @@ jobs:
         steps: 
         - script: echo '##vso[task.setvariable variable=slotName]production'
           displayName: "Deploy to Production"
-          condition: eq(parameters.enableStagingSlot, false)
+          condition: eq('${{ parameters.enableStagingSlot }}', false)
 
         - script: echo '##vso[task.setvariable variable=slotName]staging'
           displayName: "Deploy to Staging"
-          condition: eq(parameters.enableStagingSlot, true)
+          condition: eq('${{ parameters.enableStagingSlot }}', true)
 
         - task: AzureFunctionApp@2
           displayName: 'Functions Deploy'
@@ -83,7 +83,7 @@ jobs:
             package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
 
         - task: AzureAppServiceManage@0
-          condition: eq(parameters.enableStagingSlot, true)
+          condition: and(succeeded(), eq('${{ parameters.enableStagingSlot }}', true))
           inputs:
             azureSubscription: ${{ parameters.serviceConnectionId }}
             ResourceGroupName: ${{ parameters.resourceGroupName }}
