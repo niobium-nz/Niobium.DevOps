@@ -59,7 +59,7 @@ resource hostingPlan 'Microsoft.Web/serverfarms@2021-03-01' = {
   properties: {}
 }
 
-resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
+resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
   name: inputFuncAppName
   location: location
   kind: 'functionapp'
@@ -106,7 +106,7 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
   }
 }
 
-resource functionAppStagingSlot 'Microsoft.Web/sites/slots@2021-02-01' = if (enableStagingSlot) {
+resource functionAppStagingSlot 'Microsoft.Web/sites/slots@2022-03-01' = if (enableStagingSlot) {
   parent: functionApp
   name: 'staging'
   location: location
@@ -117,6 +117,36 @@ resource functionAppStagingSlot 'Microsoft.Web/sites/slots@2021-02-01' = if (ena
   properties: {
     serverFarmId: hostingPlan.id
     siteConfig: {
+      appSettings: [
+        {
+          name: 'AzureWebJobsStorage'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${inputStorageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
+        }
+        {
+          name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${inputStorageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
+        }
+        {
+          name: 'WEBSITE_CONTENTSHARE'
+          value: '${toLower(inputFuncAppName)}-staging'
+        }
+        {
+          name: 'FUNCTIONS_EXTENSION_VERSION'
+          value: '~4'
+        }
+        {
+          name: 'WEBSITE_NODE_DEFAULT_VERSION'
+          value: '~14'
+        }
+        {
+          name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
+          value: applicationInsights.properties.InstrumentationKey
+        }
+        {
+          name: 'FUNCTIONS_WORKER_RUNTIME'
+          value: functionWorkerRuntime
+        }
+      ]
       ftpsState: 'Disabled'
       minTlsVersion: '1.2'
     }
@@ -157,14 +187,6 @@ module keyVault 'modules/KeyVault.bicep' = if (enableKeyVault) {
     location: location
     keyVaultName: inputKeyVaultName
     readerPrincipalId: functionApp.identity.principalId
-  }
-}
-
-module slotSettings 'modules/SlotSettings.bicep' = if (enableStagingSlot) {
-  name: '${functionApp.name}_SlotSettings'
-  params: {
-    functionName: functionApp.name
-    slotName: functionAppStagingSlot.name
   }
 }
 
