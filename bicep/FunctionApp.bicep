@@ -110,7 +110,7 @@ resource functionAppStagingSlot 'Microsoft.Web/sites/slots@2022-03-01' = if (ena
   parent: functionApp
   name: 'staging'
   location: location
-  kind: 'functionapp'
+  kind: 'app'
   identity: {
     type: 'SystemAssigned'
   }
