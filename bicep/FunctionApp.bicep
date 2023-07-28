@@ -59,7 +59,7 @@ resource hostingPlan 'Microsoft.Web/serverfarms@2021-03-01' = {
   properties: {}
 }
 
-resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
+resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
   name: inputFuncAppName
   location: location
   kind: 'functionapp'
@@ -106,16 +106,21 @@ resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
   }
 }
 
-resource functionAppStagingSlot 'Microsoft.Web/sites/slots@2022-03-01' = if (enableStagingSlot) {
+resource functionAppStagingSlot 'Microsoft.Web/sites/slots@2021-02-01' = if (enableStagingSlot) {
   parent: functionApp
   name: 'staging'
   location: location
-  kind: 'app'
+  kind: 'functionapp'
   identity: {
     type: 'SystemAssigned'
   }
   properties: {
     serverFarmId: hostingPlan.id
+    siteConfig: {
+      ftpsState: 'Disabled'
+      minTlsVersion: '1.2'
+    }
+    httpsOnly: true
   }
 }
 
@@ -146,12 +151,20 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
   }
 }
 
-module keyVault 'modules/key-vault.bicep' = if (enableKeyVault) {
+module keyVault 'modules/KeyVault.bicep' = if (enableKeyVault) {
   name: 'keyVault'
   params: {
     location: location
     keyVaultName: inputKeyVaultName
     readerPrincipalId: functionApp.identity.principalId
+  }
+}
+
+module slotSettings 'modules/SlotSettings.bicep' = if (enableStagingSlot) {
+  name: '${functionApp.name}_SlotSettings'
+  params: {
+    functionName: functionApp.name
+    slotName: functionAppStagingSlot.name
   }
 }
 
