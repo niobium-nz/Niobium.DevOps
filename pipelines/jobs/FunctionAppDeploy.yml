@@ -67,7 +67,7 @@ jobs:
           displayName: "Deploy to Production"
           condition: eq('${{ parameters.enableStagingSlot }}', false)
 
-        - script: echo '##vso[task.setvariable variable=slotName]$(functionAppName)/staging'
+        - script: echo '##vso[task.setvariable variable=slotName]staging'
           displayName: "Deploy to Staging"
           condition: eq('${{ parameters.enableStagingSlot }}', true)
 
@@ -78,7 +78,7 @@ jobs:
             resourceGroupName: ${{ parameters.resourceGroupName }}
             appType: functionApp
             appName: $(functionAppName)
-            slotName: $(slotName)
+            slotName: '$(functionAppName)/$(slotName)'
             deployToSlotOrASE: ${{ parameters.enableStagingSlot }}
             package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
 
