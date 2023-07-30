@@ -78,7 +78,7 @@ jobs:
             resourceGroupName: ${{ parameters.resourceGroupName }}
             appType: functionApp
             appName: $(functionAppName)
-            slotName: '$(functionAppName)/$(slotName)'
+            slotName: 'staging'
             deployToSlotOrASE: ${{ parameters.enableStagingSlot }}
             package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
 
