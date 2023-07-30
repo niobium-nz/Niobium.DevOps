@@ -78,11 +78,12 @@ jobs:
             resourceGroupName: ${{ parameters.resourceGroupName }}
             appType: functionApp
             appName: $(functionAppName)
-            slotName: 'staging'
+            slotName: $(slotName)
             deployToSlotOrASE: ${{ parameters.enableStagingSlot }}
             package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
 
         - task: AzureAppServiceManage@0
+          displayName: 'Swap to Production'
           condition: and(succeeded(), eq('${{ parameters.enableStagingSlot }}', true))
           inputs:
             azureSubscription: ${{ parameters.serviceConnectionId }}
