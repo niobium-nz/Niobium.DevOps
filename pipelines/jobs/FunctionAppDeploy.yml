@@ -20,6 +20,9 @@ parameters:
 - name: enableStagingSlot
   type: boolean
   default: false
+- name: customDomainName
+  type: string
+  default: ''
 
 jobs:
 - job: Infrastructure
@@ -40,6 +43,7 @@ jobs:
         -appNamePrefix ${{ parameters.appNamePrefix }}
         -enableKeyVault ${{ convertToJson(parameters.enableKeyVault) }}
         -enableStagingSlot ${{ convertToJson(parameters.enableStagingSlot) }}
+        -customDomainName ${{ parameters.customDomainName }}
       deploymentMode: 'Incremental'
       deploymentName: 'DeployPipelineTemplate'
       deploymentOutputs: 'infrastructureProvisioningResult'

@@ -23,6 +23,9 @@ parameters:
 - name: enableStagingSlot
   type: boolean
   default: false
+- name: customDomainName
+  type: string
+  default: ''
 
 stages:
 - stage: Build
@@ -46,3 +49,4 @@ stages:
       checkoutDevopsStep: ${{ parameters.checkoutDevopsStep }}
       enableKeyVault: ${{ parameters.enableKeyVault }}
       enableStagingSlot: ${{ parameters.enableStagingSlot }}
+      customDomainName: ${{ parameters.customDomainName }}

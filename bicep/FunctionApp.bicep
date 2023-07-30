@@ -22,6 +22,9 @@ param location string = resourceGroup().location
 ])
 param runtime string = 'dotnet-isolated'
 
+@description('Optional custom domain name.')
+param customDomainName string = ''
+
 @description('Whether to deploy KeyVault.')
 param enableKeyVault bool = false
 
@@ -151,6 +154,16 @@ resource functionAppStagingSlot 'Microsoft.Web/sites/slots@2022-03-01' = if (ena
       minTlsVersion: '1.2'
     }
     httpsOnly: true
+  }
+}
+
+resource customDomain 'Microsoft.Web/sites/hostNameBindings@2022-03-01' = if (!empty(customDomainName)) {
+  name: customDomainName
+  parent: functionApp
+  properties: {
+    customHostNameDnsRecordType: 'CName'
+    hostNameType: 'Verified'
+    sslState: 'Disabled'
   }
 }
 
