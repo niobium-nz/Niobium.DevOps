@@ -63,11 +63,11 @@ jobs:
     runOnce:
       deploy:
         steps: 
-        - script: echo '##vso[task.setvariable variable=slotName]production'
+        - script: echo '##vso[task.setvariable variable=slotName;]production'
           displayName: "Deploy to Production"
           condition: eq('${{ parameters.enableStagingSlot }}', false)
 
-        - script: echo '##vso[task.setvariable variable=slotName]staging'
+        - script: echo '##vso[task.setvariable variable=slotName;]staging'
           displayName: "Deploy to Staging"
           condition: eq('${{ parameters.enableStagingSlot }}', true)
 
