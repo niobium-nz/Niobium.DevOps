@@ -29,11 +29,27 @@ resource keyVaultSecretsUserRoleDefinition 'Microsoft.Authorization/roleDefiniti
   name: '4633458b-17de-408a-b874-0445c86b69e6'
 }
 
-resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+@description('This is the built-in Key Vault Secrets User role. See https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#key-vault-secrets-user')
+resource keyVaultCertificatesOfficerRoleDefinition 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+  scope: subscription()
+  name: 'a4417e6f-fecd-4de8-b567-7b0420556985'
+}
+
+resource secretRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   name: guid(keyVault.id, readerPrincipalId, keyVaultSecretsUserRoleDefinition.id)
   scope: keyVault
   properties: {
     roleDefinitionId: keyVaultSecretsUserRoleDefinition.id
+    principalId: readerPrincipalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
+resource certificateRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(keyVault.id, readerPrincipalId, keyVaultSecretsUserRoleDefinition.id)
+  scope: keyVault
+  properties: {
+    roleDefinitionId: keyVaultCertificatesOfficerRoleDefinition.id
     principalId: readerPrincipalId
     principalType: 'ServicePrincipal'
   }
