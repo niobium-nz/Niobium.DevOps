@@ -46,7 +46,7 @@ resource secretRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-0
 }
 
 resource certificateRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(keyVault.id, readerPrincipalId, keyVaultSecretsUserRoleDefinition.id)
+  name: guid(keyVault.id, readerPrincipalId, keyVaultCertificatesOfficerRoleDefinition.id)
   scope: keyVault
   properties: {
     roleDefinitionId: keyVaultCertificatesOfficerRoleDefinition.id
