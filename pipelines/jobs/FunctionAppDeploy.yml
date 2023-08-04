@@ -26,6 +26,7 @@ parameters:
 
 jobs:
 - job: Infrastructure
+  enabled: false
   steps:
   - ${{ parameters.checkoutDevopsStep }}
 
@@ -47,7 +48,6 @@ jobs:
       deploymentMode: 'Incremental'
       deploymentName: 'DeployPipelineTemplate'
       deploymentOutputs: 'infrastructureProvisioningResult'
-    enabled: false
 
   - template: ../steps/parseBicepResult.yml
     parameters:
