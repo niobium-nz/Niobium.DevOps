@@ -26,6 +26,8 @@ parameters:
 
 jobs:
 - job: Infrastructure
+  pool:
+    vmImage: 'windows-2019'
   steps:
   - ${{ parameters.checkoutDevopsStep }}
 
