@@ -59,7 +59,7 @@ jobs:
   condition: succeeded()
   environment: 'production'
   pool:
-    vmImage: ${{ parameters.buildAgentVmImage }}
+    vmImage: 'windows-2019'
   variables:
     functionAppName: $[ dependencies.Infrastructure.outputs['infrastructureOutputs.functionAppName'] ]  
 
