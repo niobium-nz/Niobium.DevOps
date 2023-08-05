@@ -109,6 +109,8 @@ resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
   }
 }
 
+var storageConnstr = 'DefaultEndpointsProtocol=https;AccountName=${inputStorageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
+
 resource functionAppStagingSlot 'Microsoft.Web/sites/slots@2022-03-01' = if (enableStagingSlot) {
   parent: functionApp
   name: 'staging'
@@ -123,11 +125,11 @@ resource functionAppStagingSlot 'Microsoft.Web/sites/slots@2022-03-01' = if (ena
       appSettings: [
         {
           name: 'AzureWebJobsStorage'
-          value: 'DefaultEndpointsProtocol=https;AccountName=${inputStorageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
+          value: storageConnstr
         }
         {
           name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
-          value: 'DefaultEndpointsProtocol=https;AccountName=${inputStorageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
+          value: storageConnstr
         }
         {
           name: 'WEBSITE_CONTENTSHARE'
@@ -207,6 +209,7 @@ output functionAppName string = functionApp.name
 output functionAppHostname string = functionApp.properties.defaultHostName
 output hostingPlanName string = hostingPlan.name
 output storageAccountName string = storageAccount.name
+output storageAccountConnectionString string = storageConnstr
 output applicationInsightsName string = applicationInsights.name
 output applicationInsightsInstrumentationKey string = applicationInsights.properties.InstrumentationKey
 output logAnalyticsWorkspaceName string = logAnalyticsWorkspace.name
