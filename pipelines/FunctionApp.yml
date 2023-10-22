@@ -13,6 +13,9 @@ parameters:
 - name: nugetToPublish
   type: string
   default: ''
+- name: nugetVSTSFeedID
+  type: string
+  default: ''
 - name: checkoutDevopsStep
   type: step
   default:
@@ -37,6 +40,7 @@ stages:
     parameters:
       buildAgentVmImage: ${{ parameters.buildAgentVmImage }}
       nugetToPublish: ${{ parameters.nugetToPublish }}
+      nugetVSTSFeedID: ${{ parameters.nugetVSTSFeedID }}
       projectToPublish: ${{ parameters.projectToPublish }}
 
 - stage: Deploy
