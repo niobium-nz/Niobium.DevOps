@@ -23,6 +23,9 @@ parameters:
 - name: customDomainName
   type: string
   default: ''
+- name: functionRuntime
+  type: string
+  default: 'dotnet-isolated'
 
 jobs:
 - job: Infrastructure
@@ -46,6 +49,7 @@ jobs:
         -enableKeyVault ${{ convertToJson(parameters.enableKeyVault) }}
         -enableStagingSlot ${{ convertToJson(parameters.enableStagingSlot) }}
         -customDomainName ${{ parameters.customDomainName }}
+        -runtime ${{ parameters.functionRuntime }}
       deploymentMode: 'Incremental'
       deploymentName: 'DeployPipelineTemplate'
       deploymentOutputs: 'infrastructureProvisioningResult'

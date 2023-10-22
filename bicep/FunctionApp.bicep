@@ -17,7 +17,6 @@ param location string = resourceGroup().location
   'dotnet'
   'dotnet-isolated'
   'node'
-  'dotnet'
   'java'
 ])
 param runtime string = 'dotnet-isolated'

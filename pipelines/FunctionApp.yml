@@ -32,6 +32,9 @@ parameters:
 - name: customDomainName
   type: string
   default: ''
+- name: functionRuntime
+  type: string
+  default: 'dotnet-isolated'
 
 stages:
 - stage: Build
@@ -58,3 +61,4 @@ stages:
       enableKeyVault: ${{ parameters.enableKeyVault }}
       enableStagingSlot: ${{ parameters.enableStagingSlot }}
       customDomainName: ${{ parameters.customDomainName }}
+      functionRuntime: ${{ parameters.functionRuntime }}
