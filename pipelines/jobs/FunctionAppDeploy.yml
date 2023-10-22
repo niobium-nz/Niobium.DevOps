@@ -90,7 +90,7 @@ jobs:
             appName: $(functionAppName)
             slotName: $(slotName)
             deployToSlotOrASE: ${{ parameters.enableStagingSlot }}
-            package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
+            package: '$(Pipeline.Workspace)/drop/function-app-$(Build.BuildNumber).zip'
 
         - task: AzureAppServiceManage@0
           displayName: 'Swap to Production'
