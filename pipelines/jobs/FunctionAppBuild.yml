@@ -65,7 +65,6 @@ jobs:
       command: pack
       packagesToPack: ${{ parameters.nugetToPublish }}
       packDirectory: '$(Build.ArtifactStagingDirectory)/NuGet'
-      nobuild: true
       versioningScheme: byBuildNumber
 
   - task: NuGetCommand@2
