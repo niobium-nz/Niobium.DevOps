@@ -35,6 +35,9 @@ parameters:
 - name: functionRuntime
   type: string
   default: 'dotnet-isolated'
+- name: dotnetVersion
+  type: string
+  default: '7.x'
 
 stages:
 - stage: Build
@@ -45,6 +48,7 @@ stages:
       nugetToPublish: ${{ parameters.nugetToPublish }}
       nugetVSTSFeedID: ${{ parameters.nugetVSTSFeedID }}
       projectToPublish: ${{ parameters.projectToPublish }}
+      dotnetVersion: ${{ parameters.dotnetVersion }}
 
 - stage: Deploy
   dependsOn: Build

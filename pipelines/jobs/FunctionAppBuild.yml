@@ -5,6 +5,9 @@ parameters:
 - name: projectToPublish
   type: string
   default: '**/*.csproj'
+- name: dotnetVersion
+  type: string
+  default: '7.x'
 - name: nugetToPublish
   type: string
   default: ''
@@ -19,9 +22,9 @@ jobs:
 
   steps:
   - task: UseDotNet@2
-    displayName: 'Use .NET Core sdk 7.x'
+    displayName: 'Use .NET SDK'
     inputs:
-      version: 7.x
+      version: ${{ parameters.dotnetVersion }}
 
   - task: NuGetAuthenticate@0
     inputs:
