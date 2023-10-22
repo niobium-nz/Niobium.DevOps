@@ -51,7 +51,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-05-01' = {
   }
 }
 
-resource hostingPlan 'Microsoft.Web/serverfarms@2021-03-01' = {
+resource hostingPlan 'Microsoft.Web/serverfarms@2022-09-01' = {
   name: inputHostingPlanName
   location: location
   sku: {
@@ -61,7 +61,7 @@ resource hostingPlan 'Microsoft.Web/serverfarms@2021-03-01' = {
   properties: {}
 }
 
-resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
+resource functionApp 'Microsoft.Web/sites@2022-09-01' = {
   name: inputFuncAppName
   location: location
   kind: 'functionapp'
@@ -110,7 +110,7 @@ resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
 
 var storageConnstr = 'DefaultEndpointsProtocol=https;AccountName=${inputStorageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
 
-resource functionAppStagingSlot 'Microsoft.Web/sites/slots@2022-03-01' = if (enableStagingSlot) {
+resource functionAppStagingSlot 'Microsoft.Web/sites/slots@2022-09-01' = if (enableStagingSlot) {
   parent: functionApp
   name: 'staging'
   location: location
@@ -159,13 +159,13 @@ resource functionAppStagingSlot 'Microsoft.Web/sites/slots@2022-03-01' = if (ena
 }
 
 var customDomainNameValue = empty(customDomainName) ? 'dummy' : customDomainName
-resource customDomain 'Microsoft.Web/sites/hostNameBindings@2022-03-01' = if (customDomainNameValue != 'dummy') {
+resource customDomain 'Microsoft.Web/sites/hostNameBindings@2022-09-01' = if (customDomainNameValue != 'dummy') {
   name: customDomainNameValue
   parent: functionApp
   properties: {
     customHostNameDnsRecordType: 'CName'
     hostNameType: 'Verified'
-    sslState: 'Disabled'
+    sslState: 'SniEnabled'
   }
 }
 
