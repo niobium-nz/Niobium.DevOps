@@ -10,6 +10,9 @@ parameters:
 - name: buildAgentVmImage
   type: string
   default: 'windows-latest'
+- name: nugetToPublish
+  type: string
+  default: ''
 - name: checkoutDevopsStep
   type: step
   default:
@@ -33,6 +36,7 @@ stages:
   - template: jobs/FunctionAppBuild.yml
     parameters:
       buildAgentVmImage: ${{ parameters.buildAgentVmImage }}
+      nugetToPublish: ${{ parameters.nugetToPublish }}
       projectToPublish: ${{ parameters.projectToPublish }}
 
 - stage: Deploy

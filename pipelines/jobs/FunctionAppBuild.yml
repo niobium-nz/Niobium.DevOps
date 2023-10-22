@@ -5,6 +5,12 @@ parameters:
 - name: projectToPublish
   type: string
   default: '**/*.csproj'
+- name: nugetToPublish
+  type: string
+  default: ''
+- name: nugetVSTSFeedID
+  type: string
+  default: ''
 
 jobs:
 - job: Build
@@ -49,6 +55,24 @@ jobs:
       testRunner: VSTest
       testResultsFiles: '**/*.trx'
 
+  - task: DotNetCoreCLI@2
+    displayName: 'NuGet Package'
+    condition: and(succeeded(), ne('${{ parameters.nugetToPublish }}', ''))
+    inputs:
+      command: pack
+      packagesToPack: ${{ parameters.nugetToPublish }}
+      packDirectory: '$(Build.ArtifactStagingDirectory)/NuGet'
+      nobuild: true
+      versioningScheme: byBuildNumber
+
+  - task: NuGetCommand@2
+    displayName: 'NuGet Push'
+    condition: and(succeeded(), ne('${{ parameters.nugetVSTSFeedID }}', ''))
+    inputs:
+      command: push
+      packagesToPush: '$(Build.ArtifactStagingDirectory)/NuGet/**/*.nupkg;$(Build.ArtifactStagingDirectory)/NuGet/**/*.snupkg'
+      publishVstsFeed: ${{ parameters.nugetVSTSFeedID }}
+        
   - task: DotNetCoreCLI@2
     displayName: Publish
     inputs:
