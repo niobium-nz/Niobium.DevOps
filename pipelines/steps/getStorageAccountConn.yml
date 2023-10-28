@@ -16,7 +16,7 @@ steps:
     resourceGroupName: ${{ parameters.resourceGroupName }}
     location: '$(location)'
     templateLocation: 'Linked artifact'
-    csmFile: '$(Build.SourcesDirectory)/bicep/GetStorageAccountConnstr.bicep'
+    csmFile: '$(Build.SourcesDirectory)/bicep/modules/GetStorageAccountConnstr.bicep'
     overrideParameters: >-
       -storageAccountName ${{ parameters.storageAccountName }}
     deploymentMode: 'Incremental'
