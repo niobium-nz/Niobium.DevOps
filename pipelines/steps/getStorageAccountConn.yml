@@ -1,0 +1,29 @@
+parameters:
+- name: azureServiceConnection
+  type: string
+- name: resourceGroupName
+  type: string
+- name: storageAccountName
+  type: string  
+
+steps:
+- task: AzureResourceManagerTemplateDeployment@3
+  displayName: 'Get Connstr: ${{ parameters.storageAccountName }}'
+  inputs:
+    deploymentScope: 'Resource Group'
+    azureResourceManagerConnection: ${{ parameters.azureServiceConnection }}
+    action: 'Create Or Update Resource Group'
+    resourceGroupName: ${{ parameters.resourceGroupName }}
+    location: '$(location)'
+    templateLocation: 'Linked artifact'
+    csmFile: '$(Build.SourcesDirectory)/bicep/GetStorageAccountConnstr.bicep'
+    overrideParameters: >-
+      -storageAccountName ${{ parameters.storageAccountName }}
+    deploymentMode: 'Incremental'
+    deploymentName: 'DeployPipelineTemplate'
+    deploymentOutputs: 'existingStorageAccountOutputs'
+    
+- template: parseBicepResult.yml
+  parameters:
+    inputJSONValue: '$(existingStorageAccountOutputs)'
+    outputVariableName: 'existingStorageAccountProperties'
