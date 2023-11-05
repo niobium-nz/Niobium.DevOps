@@ -12,6 +12,9 @@ param storageAccountSku string = 'Standard_LRS'
 @description('Specifies the Azure location where the resources should be created.')
 param location string = resourceGroup().location
 
+@description('Allowed CORS origins.')
+param allowedOrigins array = []
+
 @description('Specifies the principal ID to the resources that manages this storage account.')
 param contributorPrincipalId string = ''
 var contributorPrincipalIdValue = empty(contributorPrincipalId) ? 'dummy' : contributorPrincipalId
@@ -42,6 +45,90 @@ resource contributorRoleAssignment 'Microsoft.Authorization/roleAssignments@2022
     roleDefinitionId: storageAccountContributorRoleDefinition.id
     principalId: contributorPrincipalId
     principalType: 'ServicePrincipal'
+  }
+}
+
+resource storageAccountTable 'Microsoft.Storage/storageAccounts/tableServices@2022-09-01' = {
+  name: 'default'
+  parent: storageAccount
+  properties: {
+    cors: {
+      corsRules: [
+        {
+          allowedOrigins: allowedOrigins
+          maxAgeInSeconds: 0
+          allowedHeaders: [
+            '*'
+          ]
+          allowedMethods: [
+            'OPTIONS'
+            'HEAD'
+            'GET'
+          ]
+          exposedHeaders: [
+            '*'
+          ]
+        }
+      ]
+    }
+  }
+}
+
+resource storageAccountQueue 'Microsoft.Storage/storageAccounts/queueServices@2022-09-01' = {
+  name: 'default'
+  parent: storageAccount
+  properties: {
+    cors: {
+      corsRules: [
+        {
+          allowedOrigins: allowedOrigins
+          maxAgeInSeconds: 0
+          allowedHeaders: [
+            '*'
+          ]
+          allowedMethods: [
+            'OPTIONS'
+            'HEAD'
+            'GET'
+            'PUT'
+            'POST'
+          ]
+          exposedHeaders: [
+            '*'
+          ]
+        }
+      ]
+    }
+  }
+}
+
+resource storageAccountBlob 'Microsoft.Storage/storageAccounts/blobServices@2022-09-01' = {
+  name: 'default'
+  parent: storageAccount
+  properties: {
+    cors: {
+      corsRules: [
+        {
+          allowedOrigins: allowedOrigins
+          maxAgeInSeconds: 0
+          allowedHeaders: [
+            '*'
+          ]
+          allowedMethods: [
+            'OPTIONS'
+            'HEAD'
+            'GET'
+            'PUT'
+            'POST'
+            'DELETE'
+            'PATCH'
+          ]
+          exposedHeaders: [
+            '*'
+          ]
+        }
+      ]
+    }
   }
 }
 

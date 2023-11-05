@@ -38,6 +38,9 @@ parameters:
 - name: dotnetVersion
   type: string
   default: '7.x'
+- name: allowedOrigins
+  type: object
+  default: []
 
 stages:
 - stage: Build
@@ -66,3 +69,4 @@ stages:
       customDomainName: ${{ parameters.customDomainName }}
       customDomainNameManagedCertificate: ${{ parameters.customDomainNameManagedCertificate }}
       functionRuntime: ${{ parameters.functionRuntime }}
+      allowedOrigins: ${{ parameters.allowedOrigins }}

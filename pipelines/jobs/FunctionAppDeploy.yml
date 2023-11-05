@@ -28,7 +28,10 @@ parameters:
   default: false
 - name: functionRuntime
   type: string
-  default: 'dotnet-isolated'
+  default: 'dotnet-isolated'  
+- name: allowedOrigins
+  type: object
+  default: []
 
 jobs:
 - job: Infrastructure
@@ -54,6 +57,7 @@ jobs:
         -customDomainName ${{ parameters.customDomainName }}
         -customDomainNameManagedCertificate ${{ convertToJson(parameters.customDomainNameManagedCertificate) }}
         -runtime ${{ parameters.functionRuntime }}
+        -allowedOrigins ${{ convertToJson(parameters.allowedOrigins) }}
       deploymentMode: 'Incremental'
       deploymentName: 'DeployPipelineTemplate'
       deploymentOutputs: 'infrastructureProvisioningResult'

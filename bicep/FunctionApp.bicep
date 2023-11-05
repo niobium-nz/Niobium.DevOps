@@ -33,6 +33,9 @@ param enableKeyVault bool = false
 @description('Whether to enable staging deployment slot.')
 param enableStagingSlot bool = false
 
+@description('Allowed CORS origins.')
+param allowedOrigins array = []
+
 var inputFuncAppName = '${appNamePrefix}Func'
 var inputHostingPlanName = '${appNamePrefix}Plan'
 var inputApplicationInsightsName = '${appNamePrefix}Insights'
@@ -48,6 +51,7 @@ module storageAccount 'modules/StorageAccount.bicep' = {
     location: location
     storageAccountName: inputStorageAccountName
     storageAccountSku: storageAccountType
+    allowedOrigins: allowedOrigins
   }
 }
 
@@ -71,6 +75,9 @@ resource functionApp 'Microsoft.Web/sites@2022-09-01' = {
   properties: {
     serverFarmId: hostingPlan.id
     siteConfig: {
+      cors:{
+        allowedOrigins: allowedOrigins
+      }
       appSettings: [
         {
           name: 'AzureWebJobsStorage'
