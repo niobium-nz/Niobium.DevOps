@@ -215,6 +215,22 @@ resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-
   location: location
 }
 
+resource scriptContributorRoleDefinition 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+  scope: subscription()
+  // This is the Website Contributor role, which is the minimum role permission we can give. See https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#website-contributor
+  name: 'de139f84-1756-47ae-9be6-808fbbe84772'
+}
+
+resource scriptRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  scope: functionApp
+  name: guid(resourceGroup().id, managedIdentity.id, scriptContributorRoleDefinition.id)
+  properties: {
+    roleDefinitionId: scriptContributorRoleDefinition.id
+    principalId: managedIdentity.properties.principalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
 resource deploymentScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = if (customDomainNameManagedCertificate && customDomainNameValue != 'dummy') {
   name: 'deploymentScript'
   location: location
@@ -226,7 +242,7 @@ resource deploymentScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = i
     }
   }
   dependsOn: [
-    customDomain
+    scriptRoleAssignment
   ]
   properties: {
     azPowerShellVersion: '10.4.1'
@@ -244,6 +260,10 @@ resource deploymentScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = i
       {
         name: 'CustomDomainName'
         value: customDomainNameValue
+      }
+      {
+        name: 'SubscriptionId'
+        value: subscription().subscriptionId
       }
     ]
   }
