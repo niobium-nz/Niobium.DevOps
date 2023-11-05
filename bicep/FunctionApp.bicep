@@ -217,8 +217,8 @@ resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-
 
 resource scriptContributorRoleDefinition 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
   scope: subscription()
-  // This is the Website Contributor role, which is the minimum role permission we can give. See https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#website-contributor
-  name: 'de139f84-1756-47ae-9be6-808fbbe84772'
+  // This is the Website Contributor role, which is the minimum role permission we can give. See https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#contributor
+  name: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
 }
 
 resource scriptRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
