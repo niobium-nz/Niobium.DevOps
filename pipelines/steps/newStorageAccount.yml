@@ -1,0 +1,29 @@
+parameters:
+- name: azureServiceConnection
+  type: string
+- name: resourceGroupName
+  type: string
+- name: storageAccountName
+  type: string  
+
+steps:
+- task: AzureResourceManagerTemplateDeployment@3
+  displayName: 'New StorageAccount: ${{ parameters.storageAccountName }}'
+  inputs:
+    deploymentScope: 'Resource Group'
+    azureResourceManagerConnection: ${{ parameters.azureServiceConnection }}
+    action: 'Create Or Update Resource Group'
+    resourceGroupName: ${{ parameters.resourceGroupName }}
+    location: '$(location)'
+    templateLocation: 'Linked artifact'
+    csmFile: '$(Build.SourcesDirectory)/bicep/modules/StorageAccount.bicep'
+    overrideParameters: >-
+      -storageAccountName ${{ parameters.storageAccountName }}
+    deploymentMode: 'Incremental'
+    deploymentName: 'DeployPipelineTemplate'
+    deploymentOutputs: 'newStorageAccountOutputs'
+    
+- template: parseBicepResult.yml
+  parameters:
+    inputJSONValue: '$(newStorageAccountOutputs)'
+    outputVariableName: 'newStorageAccountProperties'
