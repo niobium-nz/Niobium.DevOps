@@ -222,7 +222,7 @@ resource deploymentScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = i
     customDomain
   ]
   properties: {
-    azPowerShellVersion: '3.0'
+    azPowerShellVersion: '10.4.1'
     scriptContent: loadTextContent('../scripts/enable-webapp-managed-certificate.ps1')
     retentionInterval: 'PT4H'
     environmentVariables: [
