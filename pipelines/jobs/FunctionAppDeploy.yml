@@ -52,7 +52,7 @@ jobs:
         -enableKeyVault ${{ convertToJson(parameters.enableKeyVault) }}
         -enableStagingSlot ${{ convertToJson(parameters.enableStagingSlot) }}
         -customDomainName ${{ parameters.customDomainName }}
-        -customDomainNameManagedCertificate ${{ parameters.customDomainNameManagedCertificate }}
+        -customDomainNameManagedCertificate ${{ convertToJson(parameters.customDomainNameManagedCertificate) }}
         -runtime ${{ parameters.functionRuntime }}
       deploymentMode: 'Incremental'
       deploymentName: 'DeployPipelineTemplate'
