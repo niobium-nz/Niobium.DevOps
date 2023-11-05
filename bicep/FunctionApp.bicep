@@ -215,17 +215,17 @@ resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-
   location: location
 }
 
-resource scriptContributorRoleDefinition 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+resource scriptRoleDefinition 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
   scope: subscription()
-  // This is the Website Contributor role, which is the minimum role permission we can give. See https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#contributor
-  name: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
+  // This is the owner role, which is the minimum role permission we can give? TODO. See https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#owner
+  name: '8e3af657-a8ff-443c-a75c-2fe8c4bcb635'
 }
 
 resource scriptRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   scope: functionApp
-  name: guid(resourceGroup().id, managedIdentity.id, scriptContributorRoleDefinition.id)
+  name: guid(resourceGroup().id, managedIdentity.id, scriptRoleDefinition.id)
   properties: {
-    roleDefinitionId: scriptContributorRoleDefinition.id
+    roleDefinitionId: scriptRoleDefinition.id
     principalId: managedIdentity.properties.principalId
     principalType: 'ServicePrincipal'
   }
