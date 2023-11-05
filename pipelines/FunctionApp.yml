@@ -29,6 +29,9 @@ parameters:
 - name: customDomainName
   type: string
   default: ''
+- name: customDomainNameManagedCertificate
+  type: boolean
+  default: false
 - name: functionRuntime
   type: string
   default: 'dotnet-isolated'
@@ -61,4 +64,5 @@ stages:
       enableKeyVault: ${{ parameters.enableKeyVault }}
       enableStagingSlot: ${{ parameters.enableStagingSlot }}
       customDomainName: ${{ parameters.customDomainName }}
+      customDomainNameManagedCertificate: ${{ parameters.customDomainNameManagedCertificate }}
       functionRuntime: ${{ parameters.functionRuntime }}

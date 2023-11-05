@@ -24,6 +24,9 @@ param runtime string = 'dotnet-isolated'
 @description('Optional custom domain name.')
 param customDomainName string = ''
 
+@description('Optional enable custom domain name managed SSL certificate.')
+param customDomainNameManagedCertificate bool = false
+
 @description('Whether to deploy KeyVault.')
 param enableKeyVault bool = false
 
@@ -202,6 +205,45 @@ module keyVault 'modules/KeyVault.bicep' = if (enableKeyVault) {
     location: location
     keyVaultName: inputKeyVaultName
     readerPrincipalId: functionApp.identity.principalId
+  }
+}
+
+resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' = {
+  name: 'DeploymentScript'
+  location: location
+}
+
+resource deploymentScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = if (customDomainNameManagedCertificate && customDomainNameValue != 'dummy') {
+  name: 'deploymentScript'
+  location: location
+  kind: 'AzurePowerShell'
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${managedIdentity.id}': {}
+    }
+  }
+  dependsOn: [
+    customDomain
+  ]
+  properties: {
+    azPowerShellVersion: '3.0'
+    scriptContent: loadTextContent('../scripts/enable-webapp-managed-certificate.ps1')
+    retentionInterval: 'PT4H'
+    environmentVariables: [
+      {
+        name: 'ResourceGroupName'
+        value: resourceGroup().name
+      }
+      {
+        name: 'FunctionAppName'
+        value: functionApp.name
+      }
+      {
+        name: 'CustomDomainName'
+        value: customDomainNameValue
+      }
+    ]
   }
 }
 
