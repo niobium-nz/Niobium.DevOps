@@ -41,16 +41,13 @@ var inputStorageAccountName = toLower('${appNamePrefix}Store')
 var inputKeyVaultName = '${appNamePrefix}Vault'
 var functionWorkerRuntime = runtime
 
-resource storageAccount 'Microsoft.Storage/storageAccounts@2022-05-01' = {
-  name: inputStorageAccountName
-  location: location
-  sku: {
-    name: storageAccountType
-  }
-  kind: 'Storage'
-  properties: {
-    supportsHttpsTrafficOnly: true
-    defaultToOAuthAuthentication: true
+
+module storageAccount 'modules/StorageAccount.bicep' = {
+  name: 'storageAccount'
+  params: {
+    location: location
+    storageAccountName: inputStorageAccountName
+    storageAccountSku: storageAccountType
   }
 }
 
@@ -77,11 +74,11 @@ resource functionApp 'Microsoft.Web/sites@2022-09-01' = {
       appSettings: [
         {
           name: 'AzureWebJobsStorage'
-          value: 'DefaultEndpointsProtocol=https;AccountName=${inputStorageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
+          value: storageAccount.outputs.storageAccountConnectionString1
         }
         {
           name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
-          value: 'DefaultEndpointsProtocol=https;AccountName=${inputStorageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
+          value: storageAccount.outputs.storageAccountConnectionString1
         }
         {
           name: 'WEBSITE_CONTENTSHARE'
@@ -111,8 +108,6 @@ resource functionApp 'Microsoft.Web/sites@2022-09-01' = {
   }
 }
 
-var storageConnstr = 'DefaultEndpointsProtocol=https;AccountName=${inputStorageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
-
 resource functionAppStagingSlot 'Microsoft.Web/sites/slots@2022-09-01' = if (enableStagingSlot) {
   parent: functionApp
   name: 'staging'
@@ -127,11 +122,11 @@ resource functionAppStagingSlot 'Microsoft.Web/sites/slots@2022-09-01' = if (ena
       appSettings: [
         {
           name: 'AzureWebJobsStorage'
-          value: storageConnstr
+          value: storageAccount.outputs.storageAccountConnectionString1
         }
         {
           name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
-          value: storageConnstr
+          value: storageAccount.outputs.storageAccountConnectionString1
         }
         {
           name: 'WEBSITE_CONTENTSHARE'
@@ -251,7 +246,7 @@ output functionAppName string = functionApp.name
 output functionAppHostname string = functionApp.properties.defaultHostName
 output hostingPlanName string = hostingPlan.name
 output storageAccountName string = storageAccount.name
-output storageAccountConnectionString string = storageConnstr
+output storageAccountConnectionString string = storageAccount.outputs.storageAccountConnectionString1
 output applicationInsightsName string = applicationInsights.name
 output applicationInsightsInstrumentationKey string = applicationInsights.properties.InstrumentationKey
 output logAnalyticsWorkspaceName string = logAnalyticsWorkspace.name
