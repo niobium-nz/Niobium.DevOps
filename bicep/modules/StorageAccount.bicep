@@ -48,7 +48,7 @@ resource contributorRoleAssignment 'Microsoft.Authorization/roleAssignments@2022
   }
 }
 
-resource storageAccountTable 'Microsoft.Storage/storageAccounts/tableServices@2022-09-01' = {
+resource storageAccountTable 'Microsoft.Storage/storageAccounts/tableServices@2022-09-01' = if (!(empty(allowedOrigins))) {
   name: 'default'
   parent: storageAccount
   properties: {
@@ -74,7 +74,7 @@ resource storageAccountTable 'Microsoft.Storage/storageAccounts/tableServices@20
   }
 }
 
-resource storageAccountQueue 'Microsoft.Storage/storageAccounts/queueServices@2022-09-01' = {
+resource storageAccountQueue 'Microsoft.Storage/storageAccounts/queueServices@2022-09-01' = if (!(empty(allowedOrigins))) {
   name: 'default'
   parent: storageAccount
   properties: {
@@ -102,7 +102,7 @@ resource storageAccountQueue 'Microsoft.Storage/storageAccounts/queueServices@20
   }
 }
 
-resource storageAccountBlob 'Microsoft.Storage/storageAccounts/blobServices@2022-09-01' = {
+resource storageAccountBlob 'Microsoft.Storage/storageAccounts/blobServices@2022-09-01' = if (!(empty(allowedOrigins))) {
   name: 'default'
   parent: storageAccount
   properties: {
