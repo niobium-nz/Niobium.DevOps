@@ -215,22 +215,7 @@ resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-
   location: location
 }
 
-resource scriptContributorRoleDefinition 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
-  scope: subscription()
-  // This is the contributor role, which is the minimum role permission we can give. See https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#contributor
-  name: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
-}
-
-resource scriptRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  scope: resourceGroup()
-  name: guid(resourceGroup().id, managedIdentity.id, scriptContributorRoleDefinition.id)
-  properties: {
-    roleDefinitionId: scriptContributorRoleDefinition.id
-    principalId: managedIdentity.properties.principalId
-    principalType: 'ServicePrincipal'
-  }
-}
-
+// role assignment on resource group level is not support, so manual intervene is needed.
 resource deploymentScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = if (customDomainNameManagedCertificate && customDomainNameValue != 'dummy') {
   name: 'deploymentScript'
   location: location
@@ -242,7 +227,7 @@ resource deploymentScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = i
     }
   }
   dependsOn: [
-    scriptRoleAssignment
+    customDomain
   ]
   properties: {
     azPowerShellVersion: '10.4.1'
