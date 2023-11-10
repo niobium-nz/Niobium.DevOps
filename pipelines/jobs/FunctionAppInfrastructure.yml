@@ -33,7 +33,6 @@ parameters:
 
 jobs:
 - job: Infrastructure
-  dependsOn: Build
   condition: succeeded()
   pool:
     vmImage: ${{ parameters.buildAgentVmImage }}
