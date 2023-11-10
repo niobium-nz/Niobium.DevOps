@@ -1,0 +1,68 @@
+parameters:
+- name: azureServiceConnection
+  type: string
+- name: resourceGroupName
+  type: string
+- name: appNamePrefix
+  type: string
+- name: buildAgentVmImage
+  type: string
+  default: 'windows-latest'
+- name: checkoutDevopsStep
+  type: step
+  default:
+    script: echo dummy step
+- name: enableKeyVault
+  type: boolean
+  default: false
+- name: enableStagingSlot
+  type: boolean
+  default: false
+- name: customDomainName
+  type: string
+  default: ''
+- name: customDomainNameManagedCertificate
+  type: boolean
+  default: false
+- name: functionRuntime
+  type: string
+  default: 'dotnet-isolated'  
+- name: allowedOrigins
+  type: object
+  default: []
+
+jobs:
+- job: Infrastructure
+  dependsOn: Build
+  condition: succeeded()
+  pool:
+    vmImage: ${{ parameters.buildAgentVmImage }}
+  steps:
+  - ${{ parameters.checkoutDevopsStep }}
+
+  - task: AzureResourceManagerTemplateDeployment@3
+    displayName: 'Infrastructure Provisioning'
+    inputs:
+      deploymentScope: 'Resource Group'
+      azureResourceManagerConnection: ${{ parameters.azureServiceConnection }}
+      action: 'Create Or Update Resource Group'
+      resourceGroupName: ${{ parameters.resourceGroupName }}
+      location: '$(location)'
+      templateLocation: 'Linked artifact'
+      csmFile: '$(Build.SourcesDirectory)/bicep/FunctionApp.bicep'
+      overrideParameters: >-
+        -appNamePrefix ${{ parameters.appNamePrefix }}
+        -enableKeyVault ${{ convertToJson(parameters.enableKeyVault) }}
+        -enableStagingSlot ${{ convertToJson(parameters.enableStagingSlot) }}
+        -customDomainName ${{ parameters.customDomainName }}
+        -customDomainNameManagedCertificate ${{ convertToJson(parameters.customDomainNameManagedCertificate) }}
+        -runtime ${{ parameters.functionRuntime }}
+        -allowedOrigins ${{ convertToJson(parameters.allowedOrigins) }}
+      deploymentMode: 'Incremental'
+      deploymentName: 'DeployPipelineTemplate'
+      deploymentOutputs: 'infrastructureProvisioningResult'
+
+  - template: ../steps/parseBicepResult.yml
+    parameters:
+      inputJSONValue: '$(infrastructureProvisioningResult)'
+      outputVariableName: 'infrastructureOutputs'

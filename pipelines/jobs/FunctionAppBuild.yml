@@ -36,27 +36,27 @@ jobs:
       nugetConfigPath: nuget.config
         
   - task: DotNetCoreCLI@2
-    displayName: Build
+    displayName: 'Compile Projects'
     inputs:
       command: 'build'
       projects: '**/*.csproj'
       arguments: --configuration Release
         
   - task: DotNetCoreCLI@2
-    displayName: Test
+    displayName: 'Unit Test'
     inputs:
-      command: test
+      command: 'test'
       projects: '**/*Tests/*.csproj'
       arguments: '--configuration Release --logger trx --collect "Code coverage"'
       publishTestResults: true
 
   - task: PublishTestResults@2
     inputs:
-      testRunner: VSTest
+      testRunner: 'Test Result'
       testResultsFiles: '**/*.trx'
 
   - task: NuGetCommand@2
-    displayName: 'NuGet Push'
+    displayName: 'Push NuGet'
     condition: and(succeeded(), ne('${{ parameters.nugetVSTSFeedID }}', ''))
     inputs:
       command: push
@@ -64,7 +64,7 @@ jobs:
       publishVstsFeed: ${{ parameters.nugetVSTSFeedID }}
         
   - task: DotNetCoreCLI@2
-    displayName: Publish
+    displayName: 'Publish NuGet'
     inputs:
       command: 'publish'
       projects: ${{ parameters.projectToPublish }}
@@ -74,7 +74,7 @@ jobs:
       modifyOutputPath: false
 
   - task: ArchiveFiles@2
-    displayName: 'Archive'
+    displayName: 'Archive Build'
     inputs:
       rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish'
       includeRootFolder: false
