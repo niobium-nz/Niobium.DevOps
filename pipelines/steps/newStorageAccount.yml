@@ -5,6 +5,9 @@ parameters:
   type: string
 - name: storageAccountName
   type: string  
+- name: allowedOrigins
+  type: object
+  default: []
 
 steps:
 - task: AzureResourceManagerTemplateDeployment@3
@@ -19,6 +22,7 @@ steps:
     csmFile: '$(Build.SourcesDirectory)/bicep/modules/StorageAccount.bicep'
     overrideParameters: >-
       -storageAccountName ${{ parameters.storageAccountName }}
+      -allowedOrigins ${{ convertToJson(parameters.allowedOrigins) }}
     deploymentMode: 'Incremental'
     deploymentName: 'DeployPipelineTemplate'
     deploymentOutputs: 'newStorageAccountOutputs'
