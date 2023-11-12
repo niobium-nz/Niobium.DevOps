@@ -43,13 +43,3 @@ jobs:
             slotName: $(slotName)
             deployToSlotOrASE: ${{ parameters.enableStagingSlot }}
             package: '$(Pipeline.Workspace)/drop/function-app-$(Build.BuildNumber).zip'
-
-        - task: AzureAppServiceManage@0
-          displayName: 'Swap to Production'
-          condition: and(succeeded(), eq('${{ parameters.enableStagingSlot }}', true))
-          inputs:
-            azureSubscription: ${{ parameters.serviceConnectionId }}
-            ResourceGroupName: ${{ parameters.resourceGroupName }}
-            WebAppName: $(functionAppName)
-            SourceSlot: staging
-            SwapWithProduction: true
