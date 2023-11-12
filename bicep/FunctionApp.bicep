@@ -170,7 +170,7 @@ resource customDomain 'Microsoft.Web/sites/hostNameBindings@2022-09-01' = if (cu
   properties: {
     customHostNameDnsRecordType: 'CName'
     hostNameType: 'Verified'
-    sslState: 'Disabled'
+    sslState: 'SniEnabled'
   }
 }
 
