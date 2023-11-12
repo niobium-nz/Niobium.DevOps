@@ -13,7 +13,9 @@ parameters:
 jobs:
 - deployment: Deploy
   displayName: Deploy
-  dependsOn: Infrastructure
+  dependsOn: 
+    - Infrastructure
+    - Configuration
   condition: succeeded()
   environment: 'production'
   pool:
