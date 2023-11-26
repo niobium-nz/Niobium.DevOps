@@ -48,7 +48,7 @@ jobs:
             templateLocation: 'Linked artifact'
             csmFile: '$(Build.SourcesDirectory)/bicep/StaticWebsite.bicep'
             overrideParameters: >-
-              -storageAccountName ${{ parameters.resourceGroupName }}
+              -storageAccountName ${{ parameters.storageAccountName }}
               -profileName $(cdnProfileName)
               -endpointName $(cdnEndpointName)
               -enableCdn ${{ convertToJson(parameters.enableCdn) }}
