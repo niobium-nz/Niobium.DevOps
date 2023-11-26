@@ -104,5 +104,5 @@ jobs:
               if ($domains.Count -eq 0) {
                   New-AzCdnCustomDomain -ResourceGroupName $resourceGroupName -ProfileName $profileName -EndpointName $endpointName -Name $customDomainSymbolicName -HostName $customDomainName
                   $customDomainHttpsParam = New-AzCdnManagedHttpsParametersObject -CertificateSource Cdn -ProtocolType ServerNameIndication -CertificateSourceParameterCertificateType Dedicated
-                  Enable-AzCdnCustomDomainCustomHttps -CustomDomainHttpsParameter $customDomainHttpsParam -CustomDomainName $customDomainSymbolicName -ResourceGroupName $resourceGroupName -ProfileName $profileName -EndpointName $endpointName -NoWait
+                  Enable-AzCdnCustomDomainCustomHttps -CustomDomainHttpsParameter $customDomainHttpsParam -CustomDomainName $customDomainSymbolicName -ResourceGroupName $resourceGroupName -ProfileName $profileName -EndpointName $endpointName
               }
