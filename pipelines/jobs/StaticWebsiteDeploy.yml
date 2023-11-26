@@ -28,8 +28,8 @@ jobs:
   pool:
     vmImage: ${{ parameters.buildAgentVmImage }}
   variables:
-    cdnProfileName: '${{ parameters.storageAccountName }}Cdn'
-    cdnEndpointName: '${{ parameters.storageAccountName }}Endpoint'
+    cdnProfileName: '${{ parameters.storageAccountName }}cdn'
+    cdnEndpointName: '${{ parameters.storageAccountName }}endpoint'
 
   strategy:
     runOnce:
