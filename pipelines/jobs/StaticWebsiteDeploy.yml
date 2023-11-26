@@ -72,7 +72,7 @@ jobs:
             SourcePath: '$(Pipeline.Workspace)/drop/src'
             azureSubscription: '${{ parameters.azureServiceConnection }}'
             Destination: AzureBlob
-            storage: ${{ parameters.resourceGroupName }}
+            storage: ${{ parameters.storageAccountName }}
             ContainerName: '$web'
             CleanTargetBeforeCopy: true
 
