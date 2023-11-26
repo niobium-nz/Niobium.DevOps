@@ -10,6 +10,10 @@ parameters:
 - name: buildAgentVmImage
   type: string
   default: 'windows-latest'
+- name: checkoutDevopsStep
+  type: step
+  default:
+    script: echo dummy step
 - name: enableCdn
   type: boolean
   default: false
@@ -31,6 +35,8 @@ jobs:
     runOnce:
       deploy:
         steps: 
+        - ${{ parameters.checkoutDevopsStep }}
+
         - task: AzureResourceManagerTemplateDeployment@3
           displayName: 'Infrastructure'
           inputs:
