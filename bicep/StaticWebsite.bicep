@@ -87,7 +87,7 @@ resource deploymentScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
   ]
   properties: {
     azPowerShellVersion: '3.0'
-    scriptContent: loadTextContent('../../scripts/enable-static-website.ps1')
+    scriptContent: loadTextContent('../scripts/enable-static-website.ps1')
     retentionInterval: 'PT4H'
     environmentVariables: [
       {
