@@ -13,12 +13,6 @@ parameters:
 - name: enableCdn
   type: boolean
   default: false
-- name: cdnProfileName
-  type: string
-  default: '${{ parameters.storageAccountName }}Cdn'
-- name: cdnEndpointName
-  type: string
-  default: '${{ parameters.storageAccountName }}Endpoint'
 - name: cdnCustomDomainName
   type: string
   default: ''
@@ -29,6 +23,9 @@ jobs:
   environment: 'production'
   pool:
     vmImage: ${{ parameters.buildAgentVmImage }}
+  variables:
+    cdnProfileName: '${{ parameters.storageAccountName }}Cdn'
+    cdnEndpointName: '${{ parameters.storageAccountName }}Endpoint'
 
   strategy:
     runOnce:
@@ -44,7 +41,11 @@ jobs:
             location: '$(location)'
             templateLocation: 'Linked artifact'
             csmFile: '$(Build.SourcesDirectory)/bicep/StaticWebsite.bicep'
-            overrideParameters: '-storageAccountName ${{ parameters.resourceGroupName }} -profileName ${{ parameters.cdnProfileName }} -endpointName ${{ parameters.cdnEndpointName }}'
+            overrideParameters: >-
+              -storageAccountName ${{ parameters.resourceGroupName }}
+              -profileName $(cdnProfileName)
+              -endpointName $(cdnEndpointName)
+              -enableCdn ${{ convertToJson(parameters.enableCdn) }}
             deploymentMode: 'Incremental'
             deploymentName: 'DeployPipelineTemplate'
             deploymentOutputs: 'bicepOutputs'
@@ -71,15 +72,17 @@ jobs:
 
         - task: AzureCLI@2
           displayName: 'Purge CDN'
+          condition: and(succeeded(), eq('${{ parameters.enableCdn }}', true))
           inputs:
             azureSubscription: '${{ parameters.azureServiceConnection }}'
             scriptType: "ps"
             scriptLocation: inlineScript
             inlineScript: |
-              az cdn endpoint purge -g ${{ parameters.resourceGroupName }} --profile-name ${{ parameters.cdnProfileName }} --name ${{ parameters.cdnEndpointName }} --no-wait --content-paths "/*"
+              az cdn endpoint purge -g ${{ parameters.resourceGroupName }} --profile-name $(cdnProfileName) --name $(cdnEndpointName) --no-wait --content-paths "/*"
 
         - task: AzurePowerShell@5
           displayName: 'Custom Domain'
+          condition: and(succeeded(), eq('${{ parameters.enableCdn }}', true), ne('${{ parameters.cdnCustomDomainName }}', ''))
           inputs:
             azureSubscription: '${{ parameters.azureServiceConnection }}'
             ScriptType: 'InlineScript'
@@ -87,8 +90,8 @@ jobs:
             pwsh: true
             Inline: |
               $resourceGroupName = '${{ parameters.resourceGroupName }}'
-              $profileName = '${{ parameters.cdnProfileName }}'
-              $endpointName = '${{ parameters.cdnEndpointName }}'
+              $profileName = '$(cdnProfileName)'
+              $endpointName = '$(cdnEndpointName)'
               $customDomainName = '${{ parameters.cdnCustomDomainName }}'
               $customDomainSymbolicName = $customDomainName.Replace('.', '-')
               $domains = Get-AzCdnCustomDomain -ResourceGroupName $resourceGroupName -ProfileName $profileName -EndpointName $endpointName
