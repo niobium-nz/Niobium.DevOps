@@ -1,0 +1,99 @@
+parameters:
+- name: serviceConnectionId
+  type: string
+- name: azureServiceConnection
+  type: string
+- name: resourceGroupName
+  type: string
+- name: storageAccountName
+  type: string
+- name: buildAgentVmImage
+  type: string
+  default: 'windows-latest'
+- name: enableCdn
+  type: boolean
+  default: false
+- name: cdnProfileName
+  type: string
+  default: '${{ parameters.storageAccountName }}Cdn'
+- name: cdnEndpointName
+  type: string
+  default: '${{ parameters.storageAccountName }}Endpoint'
+- name: cdnCustomDomainName
+  type: string
+  default: ''
+
+jobs:
+- deployment: Deploy
+  displayName: Deploy
+  environment: 'production'
+  pool:
+    vmImage: ${{ parameters.buildAgentVmImage }}
+
+  strategy:
+    runOnce:
+      deploy:
+        steps: 
+        - task: AzureResourceManagerTemplateDeployment@3
+          displayName: 'Infrastructure'
+          inputs:
+            deploymentScope: 'Resource Group'
+            azureResourceManagerConnection: '${{ parameters.azureServiceConnection }}'
+            action: 'Create Or Update Resource Group'
+            resourceGroupName: '${{ parameters.resourceGroupName }}'
+            location: '$(location)'
+            templateLocation: 'Linked artifact'
+            csmFile: '$(Build.SourcesDirectory)/bicep/StaticWebsite.bicep'
+            overrideParameters: '-storageAccountName ${{ parameters.resourceGroupName }} -profileName ${{ parameters.cdnProfileName }} -endpointName ${{ parameters.cdnEndpointName }}'
+            deploymentMode: 'Incremental'
+            deploymentName: 'DeployPipelineTemplate'
+            deploymentOutputs: 'bicepOutputs'
+            
+        - task: AzurePowerShell@4
+          displayName: 'Infrastructure Details'
+          inputs:
+            azureSubscription: '${{ parameters.azureServiceConnection }}'
+            scriptType: 'InlineScript'
+            Inline: |
+              Write-Host '$(bicepOutputs)'
+            azurePowerShellVersion: 'latestVersion'
+            pwsh: true
+            
+        - task: AzureFileCopy@3
+          displayName: 'File Copy'
+          inputs:
+            SourcePath: '$(System.DefaultWorkingDirectory)/src'
+            azureSubscription: '${{ parameters.azureServiceConnection }}'
+            Destination: AzureBlob
+            storage: ${{ parameters.resourceGroupName }}
+            ContainerName: '$web'
+            CleanTargetBeforeCopy: true
+
+        - task: AzureCLI@2
+          displayName: 'Purge CDN'
+          inputs:
+            azureSubscription: '${{ parameters.azureServiceConnection }}'
+            scriptType: "ps"
+            scriptLocation: inlineScript
+            inlineScript: |
+              az cdn endpoint purge -g ${{ parameters.resourceGroupName }} --profile-name ${{ parameters.cdnProfileName }} --name ${{ parameters.cdnEndpointName }} --no-wait --content-paths "/*"
+
+        - task: AzurePowerShell@5
+          displayName: 'Custom Domain'
+          inputs:
+            azureSubscription: '${{ parameters.azureServiceConnection }}'
+            ScriptType: 'InlineScript'
+            azurePowerShellVersion: 'LatestVersion'
+            pwsh: true
+            Inline: |
+              $resourceGroupName = '${{ parameters.resourceGroupName }}'
+              $profileName = '${{ parameters.cdnProfileName }}'
+              $endpointName = '${{ parameters.cdnEndpointName }}'
+              $customDomainName = '${{ parameters.cdnCustomDomainName }}'
+              $customDomainSymbolicName = $customDomainName.Replace('.', '-')
+              $domains = Get-AzCdnCustomDomain -ResourceGroupName $resourceGroupName -ProfileName $profileName -EndpointName $endpointName
+              if ($domains.Count -eq 0) {
+                  New-AzCdnCustomDomain -ResourceGroupName $resourceGroupName -ProfileName $profileName -EndpointName $endpointName -Name   $customDomainSymbolicName -HostName $customDomainName
+                  $customDomainHttpsParam = New-AzCdnManagedHttpsParametersObject -CertificateSource Cdn -ProtocolType ServerNameIndication -  CertificateSourceParameterCertificateType Dedicated
+                  Enable-AzCdnCustomDomainCustomHttps -CustomDomainHttpsParameter $customDomainHttpsParam -CustomDomainName   $customDomainSymbolicName -ResourceGroupName $resourceGroupName -ProfileName $profileName -EndpointName $endpointName -NoWait
+              }
