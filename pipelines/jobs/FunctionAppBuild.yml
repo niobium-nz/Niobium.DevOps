@@ -23,7 +23,7 @@ jobs:
     inputs:
       version: ${{ parameters.dotnetVersion }}
 
-  - task: NuGetAuthenticate@0
+  - task: NuGetAuthenticate@1
     inputs:
       forceReinstallCredentialProvider: true
 

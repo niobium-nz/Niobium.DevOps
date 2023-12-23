@@ -56,7 +56,7 @@ jobs:
             deploymentName: 'DeployPipelineTemplate'
             deploymentOutputs: 'bicepOutputs'
             
-        - task: AzurePowerShell@4
+        - task: AzurePowerShell@5
           displayName: 'Infrastructure Details'
           inputs:
             azureSubscription: '${{ parameters.azureServiceConnection }}'
