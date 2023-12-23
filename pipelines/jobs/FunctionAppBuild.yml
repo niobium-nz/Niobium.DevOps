@@ -7,7 +7,7 @@ parameters:
   default: '**/*.csproj'
 - name: dotnetVersion
   type: string
-  default: '7.x'
+  default: '8.x'
 - name: nugetVSTSFeedID
   type: string
   default: ''
@@ -64,7 +64,7 @@ jobs:
       publishVstsFeed: ${{ parameters.nugetVSTSFeedID }}
         
   - task: DotNetCoreCLI@2
-    displayName: 'Publish NuGet'
+    displayName: 'Publish Build'
     inputs:
       command: 'publish'
       projects: ${{ parameters.projectToPublish }}
