@@ -30,6 +30,9 @@ parameters:
 - name: allowedOrigins
   type: object
   default: []
+- name: dotnetVersion
+  type: string
+  default: '8'
 
 jobs:
 - job: Infrastructure
@@ -57,6 +60,7 @@ jobs:
         -customDomainNameManagedCertificate ${{ convertToJson(parameters.customDomainNameManagedCertificate) }}
         -runtime ${{ parameters.functionRuntime }}
         -allowedOrigins ${{ convertToJson(parameters.allowedOrigins) }}
+        -dotnetVersion ${{ parameters.dotnetVersion }}
       deploymentMode: 'Incremental'
       deploymentName: 'DeployPipelineTemplate'
       deploymentOutputs: 'infrastructureProvisioningResult'

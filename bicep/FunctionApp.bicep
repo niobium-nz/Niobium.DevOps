@@ -21,6 +21,14 @@ param location string = resourceGroup().location
 ])
 param runtime string = 'dotnet-isolated'
 
+@description('The dotnet runtime version supported by the function app.')
+@allowed([
+  '6'
+  '7'
+  '8'
+])
+param dotnetVersion string = '8'
+
 @description('Optional custom domain name.')
 param customDomainName string = ''
 
@@ -43,7 +51,7 @@ var inputLogAnalyticsWorkspaceName = '${appNamePrefix}Logs'
 var inputStorageAccountName = toLower('${appNamePrefix}Store')
 var inputKeyVaultName = '${appNamePrefix}Vault'
 var functionWorkerRuntime = runtime
-
+var dotnetVersionParam = 'v${dotnetVersion}.0'
 
 module storageAccount 'modules/StorageAccount.bicep' = {
   name: 'storageAccount'
@@ -110,6 +118,7 @@ resource functionApp 'Microsoft.Web/sites@2022-09-01' = {
       ]
       ftpsState: 'Disabled'
       minTlsVersion: '1.2'
+      netFrameworkVersion: dotnetVersionParam
     }
     httpsOnly: true
   }
