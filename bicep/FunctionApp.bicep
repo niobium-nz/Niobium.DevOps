@@ -119,6 +119,7 @@ resource functionApp 'Microsoft.Web/sites@2022-09-01' = {
       ftpsState: 'Disabled'
       minTlsVersion: '1.2'
       netFrameworkVersion: dotnetVersionParam
+      use32BitWorkerProcess: false
     }
     httpsOnly: true
   }
@@ -167,6 +168,8 @@ resource functionAppStagingSlot 'Microsoft.Web/sites/slots@2022-09-01' = if (ena
       ]
       ftpsState: 'Disabled'
       minTlsVersion: '1.2'
+      netFrameworkVersion: dotnetVersionParam
+      use32BitWorkerProcess: false
     }
     httpsOnly: true
   }
