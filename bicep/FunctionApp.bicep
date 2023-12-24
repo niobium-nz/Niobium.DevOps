@@ -274,5 +274,5 @@ output storageAccountConnectionString string = storageAccount.outputs.storageAcc
 output applicationInsightsName string = applicationInsights.name
 output applicationInsightsInstrumentationKey string = applicationInsights.properties.InstrumentationKey
 output logAnalyticsWorkspaceName string = logAnalyticsWorkspace.name
-output keyVaultName string = keyVault.outputs.keyVaultName
-output keyVaultUrl string = keyVault.outputs.keyVaultUrl
+output keyVaultName string = enableKeyVault ? keyVault.outputs.keyVaultName : ''
+output keyVaultUrl string = enableKeyVault ? keyVault.outputs.keyVaultUrl : ''
