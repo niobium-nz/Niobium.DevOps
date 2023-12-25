@@ -29,8 +29,8 @@ param runtime string = 'dotnet-isolated'
 ])
 param dotnetVersion string = '8'
 
-@description('Optional custom domain name.')
-param customDomainName string = ''
+@description('Optional custom domain names.')
+param customDomainNames array = []
 
 @description('Optional enable custom domain name managed SSL certificate.')
 param customDomainNameManagedCertificate bool = false
@@ -175,16 +175,15 @@ resource functionAppStagingSlot 'Microsoft.Web/sites/slots@2022-09-01' = if (ena
   }
 }
 
-var customDomainNameValue = empty(customDomainName) ? 'dummy' : customDomainName
-resource customDomain 'Microsoft.Web/sites/hostNameBindings@2022-09-01' = if (customDomainNameValue != 'dummy') {
-  name: customDomainNameValue
+resource customDomain 'Microsoft.Web/sites/hostNameBindings@2022-09-01' = [for customDomainName in customDomainNames: {
+  name: customDomainName
   parent: functionApp
   properties: {
     customHostNameDnsRecordType: 'CName'
     hostNameType: 'Verified'
     sslState: 'SniEnabled'
   }
-}
+}]
 
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-06-01' = {
   name: inputLogAnalyticsWorkspaceName
@@ -228,8 +227,8 @@ resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-
 }
 
 // role assignment on resource group level is not support, so manual intervene is needed.
-resource deploymentScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = if (customDomainNameManagedCertificate && customDomainNameValue != 'dummy') {
-  name: 'deploymentScript'
+resource customDomainScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = [for customDomainName in customDomainNames: if (customDomainNameManagedCertificate) {
+  name: 'customDomainScript${customDomainName}'
   location: location
   kind: 'AzurePowerShell'
   identity: {
@@ -256,7 +255,7 @@ resource deploymentScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = i
       }
       {
         name: 'CustomDomainName'
-        value: customDomainNameValue
+        value: customDomainName
       }
       {
         name: 'SubscriptionId'
@@ -264,7 +263,7 @@ resource deploymentScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = i
       }
     ]
   }
-}
+}]
 
 output functionAppName string = functionApp.name
 output functionAppHostname string = functionApp.properties.defaultHostName
