@@ -86,36 +86,6 @@ resource functionApp 'Microsoft.Web/sites@2022-09-01' = {
       cors:{
         allowedOrigins: allowedOrigins
       }
-      appSettings: [
-        {
-          name: 'AzureWebJobsStorage'
-          value: storageAccount.outputs.storageAccountConnectionString1
-        }
-        {
-          name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
-          value: storageAccount.outputs.storageAccountConnectionString1
-        }
-        {
-          name: 'WEBSITE_CONTENTSHARE'
-          value: toLower(inputFuncAppName)
-        }
-        {
-          name: 'FUNCTIONS_EXTENSION_VERSION'
-          value: '~4'
-        }
-        {
-          name: 'WEBSITE_NODE_DEFAULT_VERSION'
-          value: '~14'
-        }
-        {
-          name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
-          value: applicationInsights.properties.InstrumentationKey
-        }
-        {
-          name: 'FUNCTIONS_WORKER_RUNTIME'
-          value: functionWorkerRuntime
-        }
-      ]
       ftpsState: 'Disabled'
       minTlsVersion: '1.2'
       netFrameworkVersion: dotnetVersionParam
