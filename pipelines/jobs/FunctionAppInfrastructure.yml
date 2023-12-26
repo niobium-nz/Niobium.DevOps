@@ -74,23 +74,23 @@ jobs:
     displayName: 'Update AppSettings'
     inputs:
       azureSubscription: ${{ parameters.azureServiceConnection }}
-      appName: $(functionAppName)
+      appName: $[infrastructureOutputs.functionAppName]
       resourceGroupName: ${{ parameters.resourceGroupName }}
       appSettings: |
         [
           {
             "name": 'AzureWebJobsStorage',
-            "value": '$(storageAccountConnectionString)',
+            "value": '$[infrastructureOutputs.storageAccountConnectionString]',
             "slotSetting": false
           },
           {
             "name": 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING',
-            "value": '$(storageAccountConnectionString)',
+            "value": '$[infrastructureOutputs.storageAccountConnectionString]',
             "slotSetting": false
           },
           {
             "name": 'WEBSITE_CONTENTSHARE',
-            "value": '${{ lower(functionAppName) }}',
+            "value": '$[lower(infrastructureOutputs.functionAppName)]',
             "slotSetting": false
           },
           {
@@ -105,7 +105,7 @@ jobs:
           },
           {
             "name": 'APPINSIGHTS_INSTRUMENTATIONKEY',
-            "value": '$(applicationInsightsInstrumentationKey)',
+            "value": '$[infrastructureOutputs.applicationInsightsInstrumentationKey]',
             "slotSetting": false
           },
           {
