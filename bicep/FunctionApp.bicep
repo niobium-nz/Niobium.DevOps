@@ -12,15 +12,6 @@ param storageAccountType string = 'Standard_LRS'
 @description('Location for all resources.')
 param location string = resourceGroup().location
 
-@description('The language worker runtime to load in the function app.')
-@allowed([
-  'dotnet'
-  'dotnet-isolated'
-  'node'
-  'java'
-])
-param runtime string = 'dotnet-isolated'
-
 @description('The dotnet runtime version supported by the function app.')
 @allowed([
   '6'
@@ -50,7 +41,6 @@ var inputApplicationInsightsName = '${appNamePrefix}Insights'
 var inputLogAnalyticsWorkspaceName = '${appNamePrefix}Logs'
 var inputStorageAccountName = toLower('${appNamePrefix}Store')
 var inputKeyVaultName = '${appNamePrefix}Vault'
-var functionWorkerRuntime = runtime
 var dotnetVersionParam = 'v${dotnetVersion}.0'
 
 module storageAccount 'modules/StorageAccount.bicep' = {
@@ -106,36 +96,6 @@ resource functionAppStagingSlot 'Microsoft.Web/sites/slots@2022-09-01' = if (ena
   properties: {
     serverFarmId: hostingPlan.id
     siteConfig: {
-      appSettings: [
-        {
-          name: 'AzureWebJobsStorage'
-          value: storageAccount.outputs.storageAccountConnectionString1
-        }
-        {
-          name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
-          value: storageAccount.outputs.storageAccountConnectionString1
-        }
-        {
-          name: 'WEBSITE_CONTENTSHARE'
-          value: '${toLower(inputFuncAppName)}-staging'
-        }
-        {
-          name: 'FUNCTIONS_EXTENSION_VERSION'
-          value: '~4'
-        }
-        {
-          name: 'WEBSITE_NODE_DEFAULT_VERSION'
-          value: '~14'
-        }
-        {
-          name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
-          value: applicationInsights.properties.InstrumentationKey
-        }
-        {
-          name: 'FUNCTIONS_WORKER_RUNTIME'
-          value: functionWorkerRuntime
-        }
-      ]
       ftpsState: 'Disabled'
       minTlsVersion: '1.2'
       netFrameworkVersion: dotnetVersionParam
@@ -236,6 +196,7 @@ resource customDomainScript 'Microsoft.Resources/deploymentScripts@2020-10-01' =
 }]
 
 output functionAppName string = functionApp.name
+output functionAppContentShareName string = toLower(functionApp.name)
 output functionAppHostname string = functionApp.properties.defaultHostName
 output hostingPlanName string = hostingPlan.name
 output storageAccountName string = storageAccount.name

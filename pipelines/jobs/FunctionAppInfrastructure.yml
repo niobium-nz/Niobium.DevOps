@@ -58,7 +58,6 @@ jobs:
         -enableStagingSlot ${{ convertToJson(parameters.enableStagingSlot) }}
         -customDomainNames ${{ convertToJson(parameters.customDomainNames) }}
         -customDomainNameManagedCertificate ${{ convertToJson(parameters.customDomainNameManagedCertificate) }}
-        -runtime ${{ parameters.functionRuntime }}
         -allowedOrigins ${{ convertToJson(parameters.allowedOrigins) }}
         -dotnetVersion ${{ parameters.dotnetVersion }}
       deploymentMode: 'Incremental'
@@ -74,9 +73,10 @@ jobs:
   dependsOn: Infrastructure
   condition: succeeded()
   variables:
-    functionAppName: $[ dependencies.Infrastructure.outputs['infrastructureOutputs.functionAppName'] ]  
-    storageAccountConnectionString: $[ dependencies.Infrastructure.outputs['infrastructureOutputs.storageAccountConnectionString'] ]  
-    applicationInsightsInstrumentationKey: $[ dependencies.Infrastructure.outputs['infrastructureOutputs.applicationInsightsInstrumentationKey'] ]  
+    functionAppName: $[dependencies.Infrastructure.outputs['infrastructureOutputs.functionAppName']]
+    functionAppContentShareName: $[dependencies.Infrastructure.outputs['infrastructureOutputs.functionAppContentShareName']]
+    storageAccountConnectionString: $[dependencies.Infrastructure.outputs['infrastructureOutputs.storageAccountConnectionString']]  
+    applicationInsightsInstrumentationKey: $[dependencies.Infrastructure.outputs['infrastructureOutputs.applicationInsightsInstrumentationKey']]  
   pool:
     vmImage: ${{ parameters.buildAgentVmImage }}
   steps:
@@ -100,7 +100,7 @@ jobs:
           },
           {
             "name": 'WEBSITE_CONTENTSHARE',
-            "value": '$[lower(variables["functionAppName"])]',
+            "value": '$(functionAppContentShareName)',
             "slotSetting": false
           },
           {
