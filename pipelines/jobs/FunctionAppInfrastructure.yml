@@ -90,7 +90,7 @@ jobs:
           },
           {
             "name": 'WEBSITE_CONTENTSHARE',
-            "value": '${{ lower(infrastructureOutputs.functionAppName) }}',
+            "value": '$(infrastructureOutputs.functionAppName)',
             "slotSetting": false
           },
           {
