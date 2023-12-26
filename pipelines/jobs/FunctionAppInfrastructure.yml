@@ -70,27 +70,37 @@ jobs:
       inputJSONValue: '$(infrastructureProvisioningResult)'
       outputVariableName: 'infrastructureOutputs'
 
+- job: AppSettings
+  dependsOn: Infrastructure
+  condition: succeeded()
+  variables:
+    functionAppName: $[ dependencies.Infrastructure.outputs['infrastructureOutputs.functionAppName'] ]  
+    storageAccountConnectionString: $[ dependencies.Infrastructure.outputs['infrastructureOutputs.storageAccountConnectionString'] ]  
+    applicationInsightsInstrumentationKey: $[ dependencies.Infrastructure.outputs['infrastructureOutputs.applicationInsightsInstrumentationKey'] ]  
+  pool:
+    vmImage: ${{ parameters.buildAgentVmImage }}
+  steps:
   - task: AzureAppServiceSettings@1
     displayName: 'Update AppSettings'
     inputs:
       azureSubscription: ${{ parameters.azureServiceConnection }}
-      appName: $[infrastructureOutputs.functionAppName]
+      appName: $(functionAppName)
       resourceGroupName: ${{ parameters.resourceGroupName }}
       appSettings: |
         [
           {
             "name": 'AzureWebJobsStorage',
-            "value": '$[infrastructureOutputs.storageAccountConnectionString]',
+            "value": '$(storageAccountConnectionString)',
             "slotSetting": false
           },
           {
             "name": 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING',
-            "value": '$[infrastructureOutputs.storageAccountConnectionString]',
+            "value": '$(storageAccountConnectionString)',
             "slotSetting": false
           },
           {
             "name": 'WEBSITE_CONTENTSHARE',
-            "value": '$[lower(infrastructureOutputs.functionAppName)]',
+            "value": '$[lower(variables["functionAppName"])]',
             "slotSetting": false
           },
           {
@@ -105,7 +115,7 @@ jobs:
           },
           {
             "name": 'APPINSIGHTS_INSTRUMENTATIONKEY',
-            "value": '$[infrastructureOutputs.applicationInsightsInstrumentationKey]',
+            "value": '$(applicationInsightsInstrumentationKey)',
             "slotSetting": false
           },
           {
