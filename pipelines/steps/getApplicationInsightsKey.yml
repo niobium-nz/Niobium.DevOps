@@ -1,0 +1,29 @@
+parameters:
+- name: azureServiceConnection
+  type: string
+- name: resourceGroupName
+  type: string
+- name: applicationInsightsName
+  type: string  
+
+steps:
+- task: AzureResourceManagerTemplateDeployment@3
+  displayName: 'Get Key: ${{ parameters.applicationInsightsName }}'
+  inputs:
+    deploymentScope: 'Resource Group'
+    azureResourceManagerConnection: ${{ parameters.azureServiceConnection }}
+    action: 'Create Or Update Resource Group'
+    resourceGroupName: ${{ parameters.resourceGroupName }}
+    location: '$(location)'
+    templateLocation: 'Linked artifact'
+    csmFile: '$(Build.SourcesDirectory)/bicep/modules/GetApplicationInsightsKey.bicep'
+    overrideParameters: >-
+      -applicationInsightsName ${{ parameters.applicationInsightsName }}
+    deploymentMode: 'Incremental'
+    deploymentName: 'DeployPipelineTemplate'
+    deploymentOutputs: 'existingApplicationInsightsOutputs'
+    
+- template: parseBicepResult.yml
+  parameters:
+    inputJSONValue: '$(existingApplicationInsightsOutputs)'
+    outputVariableName: 'existingApplicationInsightsProperties'
