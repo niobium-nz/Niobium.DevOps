@@ -19,7 +19,7 @@ param allowedOrigins array = []
 param contributorPrincipalId string = ''
 var contributorPrincipalIdValue = empty(contributorPrincipalId) ? 'dummy' : contributorPrincipalId
 
-resource storageAccount 'Microsoft.Storage/storageAccounts@2022-05-01' = {
+resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   name: storageAccountName
   location: location
   sku: {
