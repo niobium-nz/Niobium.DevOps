@@ -220,5 +220,5 @@ resource endpoint 'Microsoft.Cdn/profiles/endpoints@2021-06-01' = if (enableCdn)
 }
 
 output staticWebsiteUrl string = originUrl
-output originHostHeader string = endpoint.properties.originHostHeader
-output cdnHostName string = endpoint.properties.hostName 
+output originHostHeader string = enableCdn ? endpoint.properties.originHostHeader : ''
+output cdnHostName string = enableCdn ? endpoint.properties.hostName :''
