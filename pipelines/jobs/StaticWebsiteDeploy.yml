@@ -17,6 +17,9 @@ parameters:
 - name: enableCdn
   type: boolean
   default: false
+- name: enableStaticWebsite
+  type: boolean
+  default: true
 - name: cdnCustomDomainName
   type: string
   default: ''
@@ -52,6 +55,7 @@ jobs:
               -profileName $(cdnProfileName)
               -endpointName $(cdnEndpointName)
               -enableCdn ${{ convertToJson(parameters.enableCdn) }}
+              -enableStaticWebsite ${{ convertToJson(parameters.enableStaticWebsite) }}
             deploymentMode: 'Incremental'
             deploymentName: 'DeployPipelineTemplate'
             deploymentOutputs: 'bicepOutputs'
