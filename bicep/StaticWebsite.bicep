@@ -41,6 +41,9 @@ param endpointName string = '${storageAccountName}Endpoint'
 @description('Whether to enable CDN support.')
 param enableCdn bool = false
 
+@description('Whether to enable static website.')
+param enableStaticWebsite bool = true
+
 resource contributorRoleDefinition 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
   scope: subscription()
   // This is the Storage Account Contributor role, which is the minimum role permission we can give. See https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#:~:text=17d1049b-9a84-46fb-8f53-869881c3d3ab
@@ -71,7 +74,7 @@ resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   }
 }
 
-resource deploymentScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
+resource deploymentScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = if (enableStaticWebsite) {
   name: 'deploymentScript'
   location: location
   kind: 'AzurePowerShell'
