@@ -10,9 +10,6 @@ param daysToArchive int
 @description('Specifies days after last access time before removing.')
 param daysToRemove int
 
-@description('Specifies the tag to match for cost optimization.')
-param tagToMatch string
-
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' existing = {
   name: storageAccountName
 }
@@ -24,7 +21,7 @@ resource lifetimePolicy 'Microsoft.Storage/storageAccounts/managementPolicies@20
       rules: [
         {
           enabled: true
-          name: 'move-to-cool'
+          name: 'move-to-cold'
           type: 'Lifecycle'
           definition: {
             actions: {
@@ -32,9 +29,55 @@ resource lifetimePolicy 'Microsoft.Storage/storageAccounts/managementPolicies@20
                 tierToCold: {
                   daysAfterLastAccessTimeGreaterThan: daysToCold
                 }
+              }
+            }
+            filters: {
+              blobIndexMatch: [
+                {
+                  name: 'toCold'
+                  op: '=='
+                  value: 'true'
+                }
+              ]
+              blobTypes: [
+                'blockBlob'
+              ]
+            }
+          }
+        }
+        {
+          enabled: true
+          name: 'move-to-archive'
+          type: 'Lifecycle'
+          definition: {
+            actions: {
+              baseBlob: {
                 tierToArchive: {
                   daysAfterLastAccessTimeGreaterThan: daysToArchive
                 }
+              }
+            }
+            filters: {
+              blobIndexMatch: [
+                {
+                  name: 'toArchive'
+                  op: '=='
+                  value: 'true'
+                }
+              ]
+              blobTypes: [
+                'blockBlob'
+              ]
+            }
+          }
+        }
+        {
+          enabled: true
+          name: 'to-delete'
+          type: 'Lifecycle'
+          definition: {
+            actions: {
+              baseBlob: {
                 delete: {
                   daysAfterLastAccessTimeGreaterThan: daysToRemove
                 }
@@ -43,7 +86,7 @@ resource lifetimePolicy 'Microsoft.Storage/storageAccounts/managementPolicies@20
             filters: {
               blobIndexMatch: [
                 {
-                  name: tagToMatch
+                  name: 'toDelete'
                   op: '=='
                   value: 'true'
                 }
