@@ -64,7 +64,7 @@ resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-
   location: location
 }
 
-resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (enableStaticWebsite) {
   scope: storageAccount
   name: guid(resourceGroup().id, managedIdentity.id, contributorRoleDefinition.id)
   properties: {
