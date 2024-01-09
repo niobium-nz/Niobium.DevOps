@@ -56,6 +56,12 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2021-06-01' = {
   kind: 'StorageV2'
   sku: {
     name: storageSku
+  }  
+  properties: {
+    supportsHttpsTrafficOnly: false
+    minimumTlsVersion: 'TLS1_2'
+    allowBlobPublicAccess: false
+    accessTier: 'Hot'
   }
 }
 
