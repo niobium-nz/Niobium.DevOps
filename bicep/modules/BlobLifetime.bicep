@@ -1,6 +1,9 @@
 @description('Specifies the name of the storage account.')
 param storageAccountName string
 
+@description('Specifies days after last access time before moving to cool tier.')
+param daysToCool int
+
 @description('Specifies days after last access time before moving to cold tier.')
 param daysToCold int
 
@@ -19,6 +22,32 @@ resource lifetimePolicy 'Microsoft.Storage/storageAccounts/managementPolicies@20
   properties: {
     policy: {
       rules: [
+          {
+          enabled: true
+          name: 'move-to-cool'
+          type: 'Lifecycle'
+          definition: {
+            actions: {
+              baseBlob: {
+                tierToCool: {
+                  daysAfterLastAccessTimeGreaterThan: daysToCool
+                }
+              }
+            }
+            filters: {
+              blobIndexMatch: [
+                {
+                  name: 'toCool'
+                  op: '=='
+                  value: 'true'
+                }
+              ]
+              blobTypes: [
+                'blockBlob'
+              ]
+            }
+          }
+        }
         {
           enabled: true
           name: 'move-to-cold'
