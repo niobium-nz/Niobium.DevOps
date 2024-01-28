@@ -1,5 +1,5 @@
 parameters:
-- name: serviceConnectionId
+- name: serviceConnection
   type: string
 - name: resourceGroupName
   type: string
@@ -38,7 +38,7 @@ jobs:
         - task: AzureFunctionApp@2
           displayName: 'Functions Deploy'
           inputs:
-            azureSubscription: ${{ parameters.serviceConnectionId }}
+            connectedServiceNameARM: ${{ parameters.serviceConnection }}
             resourceGroupName: ${{ parameters.resourceGroupName }}
             appType: functionApp
             appName: $(functionAppName)
