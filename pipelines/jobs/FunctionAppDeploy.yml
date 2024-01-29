@@ -44,4 +44,4 @@ jobs:
             appName: $(functionAppName)
             slotName: $(slotName)
             deployToSlotOrASE: ${{ parameters.enableStagingSlot }}
-            package: '$(Pipeline.Workspace)/drop/function-app-$(Build.BuildNumber).zip'
+            package: '$(Pipeline.Workspace)/drop/$(Build.BuildNumber).zip'
