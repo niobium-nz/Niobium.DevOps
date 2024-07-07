@@ -17,6 +17,9 @@ param storageAccountName string = 'website${uniqueString(resourceGroup().id)}'
 @description('The storage account sku name.')
 param storageSku string = 'Standard_LRS'
 
+@description('Allowed CORS origins.')
+param allowedOrigins array = []
+
 @description('The path to the web index document.')
 param indexDocumentPath string = 'index.html'
 
@@ -77,6 +80,90 @@ resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = i
     roleDefinitionId: contributorRoleDefinition.id
     principalId: managedIdentity.properties.principalId
     principalType: 'ServicePrincipal'
+  }
+}
+
+resource storageAccountTable 'Microsoft.Storage/storageAccounts/tableServices@2022-09-01' = if (!(empty(allowedOrigins))) {
+  name: 'default'
+  parent: storageAccount
+  properties: {
+    cors: {
+      corsRules: [
+        {
+          allowedOrigins: allowedOrigins
+          maxAgeInSeconds: 0
+          allowedHeaders: [
+            '*'
+          ]
+          allowedMethods: [
+            'OPTIONS'
+            'HEAD'
+            'GET'
+          ]
+          exposedHeaders: [
+            '*'
+          ]
+        }
+      ]
+    }
+  }
+}
+
+resource storageAccountQueue 'Microsoft.Storage/storageAccounts/queueServices@2022-09-01' = if (!(empty(allowedOrigins))) {
+  name: 'default'
+  parent: storageAccount
+  properties: {
+    cors: {
+      corsRules: [
+        {
+          allowedOrigins: allowedOrigins
+          maxAgeInSeconds: 0
+          allowedHeaders: [
+            '*'
+          ]
+          allowedMethods: [
+            'OPTIONS'
+            'HEAD'
+            'GET'
+            'PUT'
+            'POST'
+          ]
+          exposedHeaders: [
+            '*'
+          ]
+        }
+      ]
+    }
+  }
+}
+
+resource storageAccountBlob 'Microsoft.Storage/storageAccounts/blobServices@2022-09-01' = if (!(empty(allowedOrigins))) {
+  name: 'default'
+  parent: storageAccount
+  properties: {
+    cors: {
+      corsRules: [
+        {
+          allowedOrigins: allowedOrigins
+          maxAgeInSeconds: 0
+          allowedHeaders: [
+            '*'
+          ]
+          allowedMethods: [
+            'OPTIONS'
+            'HEAD'
+            'GET'
+            'PUT'
+            'POST'
+            'DELETE'
+            'PATCH'
+          ]
+          exposedHeaders: [
+            '*'
+          ]
+        }
+      ]
+    }
   }
 }
 
