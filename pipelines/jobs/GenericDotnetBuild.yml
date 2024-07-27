@@ -18,6 +18,9 @@ jobs:
     vmImage: ${{ parameters.buildAgentVmImage }}
 
   steps:
+  - checkout: self
+    submodules: true
+    
   - task: UseDotNet@2
     displayName: 'Use .NET SDK'
     inputs:
