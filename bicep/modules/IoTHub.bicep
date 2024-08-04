@@ -112,5 +112,5 @@ var eventHubCompatibleEndpoint = iotHub.properties.eventHubEndpoints.events.endp
 var eventHubCompatibleName = iotHub.properties.eventHubEndpoints.events.path
 
 output hostName string = '${iotHubName}.${rootDomain}'
-output iotHubConnectionString string = 'HostName=${hostName};SharedAccessKeyName=${keyName};SharedAccessKey=${keyValue}'
+output iotHubConnectionString string = 'HostName=${iotHubName}.${rootDomain};SharedAccessKeyName=${keyName};SharedAccessKey=${keyValue}'
 output eventHubConnectionString string = 'Endpoint=${eventHubCompatibleEndpoint};SharedAccessKeyName=${keyName};SharedAccessKey=${keyValue};EntityPath=${eventHubCompatibleName}'
