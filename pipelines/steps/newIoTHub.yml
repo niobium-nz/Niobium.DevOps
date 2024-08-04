@@ -1,0 +1,43 @@
+parameters:
+- name: azureServiceConnection
+  type: string
+- name: resourceGroupName
+  type: string
+- name: iotHubName
+  type: string  
+- name: primaryCert
+  type: string  
+- name: secondaryCert
+  type: string  
+- name: skuName
+  type: string
+  default: 'F1'
+- name: isChina
+  type: boolean
+  default: false
+
+steps:
+- task: AzureResourceManagerTemplateDeployment@3
+  displayName: 'New IoT Hub: ${{ parameters.iotHubName }}'
+  inputs:
+    deploymentScope: 'Resource Group'
+    azureResourceManagerConnection: ${{ parameters.azureServiceConnection }}
+    action: 'Create Or Update Resource Group'
+    resourceGroupName: ${{ parameters.resourceGroupName }}
+    location: '$(location)'
+    templateLocation: 'Linked artifact'
+    csmFile: '$(Build.SourcesDirectory)/bicep/modules/IoTHub.bicep'
+    overrideParameters: >-
+      -iotHubName ${{ parameters.iotHubName }}
+      -skuName ${{ parameters.skuName }}
+      -isChina ${{ convertToJson(parameters.isChina) }}
+      -primaryCert ${{ parameters.primaryCert }}
+      -secondaryCert ${{ parameters.secondaryCert }}
+    deploymentMode: 'Incremental'
+    deploymentName: 'DeployPipelineTemplate'
+    deploymentOutputs: 'newIoTHubOutputs'
+    
+- template: parseBicepResult.yml
+  parameters:
+    inputJSONValue: '$(newIoTHubOutputs)'
+    outputVariableName: 'newIoTHubProperties'
