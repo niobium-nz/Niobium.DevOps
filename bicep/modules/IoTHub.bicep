@@ -23,6 +23,7 @@ param primaryCert string
 param secondaryCert string
 
 var consumerGroupName = '${iotHubName}/events/devicetelemetry'
+var partitionCount = skuName == 'F1' ? 2 : 4
 
 resource iotHub 'Microsoft.Devices/IotHubs@2023-06-30' = {
   name: iotHubName
@@ -31,7 +32,7 @@ resource iotHub 'Microsoft.Devices/IotHubs@2023-06-30' = {
     eventHubEndpoints: {
       events: {
         retentionTimeInDays: 1
-        partitionCount: 4
+        partitionCount: partitionCount
       }
     }
     cloudToDevice: {
