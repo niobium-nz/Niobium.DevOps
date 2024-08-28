@@ -4,7 +4,10 @@ parameters:
 - name: resourceGroupName
   type: string
 - name: storageAccountName
+  type: string
+- name: contributorPrincipalId
   type: string  
+  default: ''
 - name: allowedOrigins
   type: object
   default: []
@@ -22,6 +25,7 @@ steps:
     csmFile: '$(Build.SourcesDirectory)/bicep/modules/StorageAccount.bicep'
     overrideParameters: >-
       -storageAccountName ${{ parameters.storageAccountName }}
+      -contributorPrincipalId ${{ parameters.contributorPrincipalId }}
       -allowedOrigins ${{ convertToJson(parameters.allowedOrigins) }}
     deploymentMode: 'Incremental'
     deploymentName: 'DeployPipelineTemplate'
