@@ -35,17 +35,65 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   }
 }
 
-@description('This is the built-in Key Vault Secrets User role. See https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#storage-account-contributor')
+@description('This is the built-in Storage Account Contributor role. See https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#storage-account-contributor')
 resource storageAccountContributorRoleDefinition 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
   scope: subscription()
   name: '17d1049b-9a84-46fb-8f53-869881c3d3ab'
 }
 
-resource contributorRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (contributorPrincipalIdValue != 'dummy') {
+@description('This is the built-in Storage Blob Data Contributor role. See https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#storage-account-contributor')
+resource storageBlobContributorRoleDefinition 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+  scope: subscription()
+  name: 'ba92f5b4-2d11-453d-a403-e96b0029c9fe'
+}
+
+@description('This is the built-in Storage Queue Data Contributor role. See https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#storage-account-contributor')
+resource storageQueueContributorRoleDefinition 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+  scope: subscription()
+  name: '974c5e8b-45b9-4653-ba55-5f855dd0fb88'
+}
+
+@description('This is the built-in Storage Table Data Contributor role. See https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#storage-account-contributor')
+resource storageTableContributorRoleDefinition 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+  scope: subscription()
+  name: '0a9a7e1f-b9d0-4cc4-a60d-0319b160aaa3'
+}
+
+resource accountContributorRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (contributorPrincipalIdValue != 'dummy') {
   name: guid(storageAccount.id, contributorPrincipalId, storageAccountContributorRoleDefinition.id)
   scope: storageAccount
   properties: {
     roleDefinitionId: storageAccountContributorRoleDefinition.id
+    principalId: contributorPrincipalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
+resource blobContributorRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (contributorPrincipalIdValue != 'dummy') {
+  name: guid(storageAccount.id, contributorPrincipalId, storageBlobContributorRoleDefinition.id)
+  scope: storageAccount
+  properties: {
+    roleDefinitionId: storageBlobContributorRoleDefinition.id
+    principalId: contributorPrincipalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
+resource queueContributorRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (contributorPrincipalIdValue != 'dummy') {
+  name: guid(storageAccount.id, contributorPrincipalId, storageQueueContributorRoleDefinition.id)
+  scope: storageAccount
+  properties: {
+    roleDefinitionId: storageQueueContributorRoleDefinition.id
+    principalId: contributorPrincipalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
+resource tableContributorRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (contributorPrincipalIdValue != 'dummy') {
+  name: guid(storageAccount.id, contributorPrincipalId, storageTableContributorRoleDefinition.id)
+  scope: storageAccount
+  properties: {
+    roleDefinitionId: storageTableContributorRoleDefinition.id
     principalId: contributorPrincipalId
     principalType: 'ServicePrincipal'
   }
