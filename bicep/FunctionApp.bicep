@@ -198,6 +198,7 @@ resource customDomainScript 'Microsoft.Resources/deploymentScripts@2020-10-01' =
 output functionAppName string = functionApp.name
 output functionAppContentShareName string = toLower(functionApp.name)
 output functionAppHostname string = functionApp.properties.defaultHostName
+output functionAppPrincipalId string = functionApp.identity.principalId
 output hostingPlanName string = hostingPlan.name
 output storageAccountName string = storageAccount.name
 output storageAccountConnectionString string = storageAccount.outputs.storageAccountConnectionString1

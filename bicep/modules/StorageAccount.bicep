@@ -140,3 +140,6 @@ var storageConnstr2 = 'DefaultEndpointsProtocol=https;AccountName=${storageAccou
 
 output storageAccountConnectionString1 string = storageConnstr1
 output storageAccountConnectionString2 string = storageConnstr2
+output blobEndpoint string = storageAccount.properties.primaryEndpoints.blob
+output tableEndpoint string = storageAccount.properties.primaryEndpoints.table
+output queueEndpoint string = storageAccount.properties.primaryEndpoints.queue
