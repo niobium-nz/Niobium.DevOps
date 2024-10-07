@@ -1,6 +1,4 @@
 parameters:
-- name: serviceConnectionId
-  type: string
 - name: azureServiceConnection
   type: string
 - name: resourceGroupName
