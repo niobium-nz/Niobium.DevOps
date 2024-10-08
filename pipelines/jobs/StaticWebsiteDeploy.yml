@@ -72,7 +72,7 @@ jobs:
             azurePowerShellVersion: 'latestVersion'
             pwsh: true
             
-        - task: AzureFileCopy@3
+        - task: AzureFileCopy@6
           displayName: 'File Copy'
           inputs:
             SourcePath: '$(Pipeline.Workspace)/drop'
