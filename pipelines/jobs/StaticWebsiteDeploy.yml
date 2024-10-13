@@ -75,7 +75,7 @@ jobs:
         - task: AzureFileCopy@6
           displayName: 'File Copy'
           inputs:
-            SourcePath: '$(Pipeline.Workspace)/drop'
+            SourcePath: '$(Pipeline.Workspace)/drop/*'
             azureSubscription: '${{ parameters.azureServiceConnection }}'
             Destination: AzureBlob
             storage: ${{ parameters.storageAccountName }}
