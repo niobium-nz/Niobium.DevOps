@@ -34,7 +34,7 @@ resource serviceBusQueue 'Microsoft.ServiceBus/namespaces/queues@2023-01-01-prev
   name: serviceBusQueueName
   properties: {
     lockDuration: 'PT5M'
-    maxSizeInMegabytes: 256
+    maxSizeInMegabytes: 1024
     requiresDuplicateDetection: false
     requiresSession: false
     defaultMessageTimeToLive: 'P14D'
