@@ -41,7 +41,6 @@ resource serviceBusQueue 'Microsoft.ServiceBus/namespaces/queues@2023-01-01-prev
     deadLetteringOnMessageExpiration: true
     duplicateDetectionHistoryTimeWindow: 'PT10M'
     maxDeliveryCount: 10
-    autoDeleteOnIdle: 'P10675199DT2H48M5.4775807S'
     enablePartitioning: false
     enableExpress: false
   }
