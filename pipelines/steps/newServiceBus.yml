@@ -1,0 +1,36 @@
+parameters:
+- name: azureServiceConnection
+  type: string
+- name: resourceGroupName
+  type: string
+- name: serviceBusNamespaceName
+  type: string  
+- name: serviceBusQueueName
+  type: string  
+- name: serviceBusSku
+  type: string
+  default: 'Basic'
+
+steps:
+- task: AzureResourceManagerTemplateDeployment@3
+  displayName: 'New Service Bus: ${{ parameters.serviceBusNamespaceName }}'
+  inputs:
+    deploymentScope: 'Resource Group'
+    azureResourceManagerConnection: ${{ parameters.azureServiceConnection }}
+    action: 'Create Or Update Resource Group'
+    resourceGroupName: ${{ parameters.resourceGroupName }}
+    location: '$(location)'
+    templateLocation: 'Linked artifact'
+    csmFile: '$(Build.SourcesDirectory)/bicep/modules/ServiceBus.bicep'
+    overrideParameters: >-
+      -serviceBusNamespaceName ${{ parameters.serviceBusNamespaceName }}
+      -serviceBusQueueName ${{ parameters.serviceBusQueueName }}
+      -serviceBusSku ${{ parameters.serviceBusSku }}
+    deploymentMode: 'Incremental'
+    deploymentName: 'DeployPipelineTemplate'
+    deploymentOutputs: 'newServiceBusOutputs'
+    
+- template: parseBicepResult.yml
+  parameters:
+    inputJSONValue: '$(newServiceBusOutputs)'
+    outputVariableName: 'newServiceBusProperties'
