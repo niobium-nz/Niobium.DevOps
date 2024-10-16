@@ -33,6 +33,9 @@ parameters:
 - name: dotnetVersion
   type: string
   default: '8'
+- name: corsSupportCredentials
+  type: boolean
+  default: false
 
 jobs:
 - job: Infrastructure
@@ -60,6 +63,7 @@ jobs:
         -customDomainNameManagedCertificate ${{ convertToJson(parameters.customDomainNameManagedCertificate) }}
         -allowedOrigins ${{ convertToJson(parameters.allowedOrigins) }}
         -dotnetVersion ${{ parameters.dotnetVersion }}
+        -corsSupportCredentials ${{ convertToJson(parameters.corsSupportCredentials) }}
       deploymentMode: 'Incremental'
       deploymentName: 'DeployPipelineTemplate'
       deploymentOutputs: 'infrastructureProvisioningResult'
