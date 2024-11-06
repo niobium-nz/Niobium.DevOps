@@ -33,7 +33,7 @@ param enableKeyVault bool = false
 param enableStagingSlot bool = false
 
 @description('Allowed CORS origins.')
-param allowedOrigins array = []
+param allowedOrigins string = ''
 
 @description('Whether to enable Access-Control-Allow-Credentials on CORS.')
 param corsSupportCredentials bool = false
@@ -45,7 +45,8 @@ var inputLogAnalyticsWorkspaceName = '${appNamePrefix}Logs'
 var inputStorageAccountName = toLower('${appNamePrefix}Store')
 var inputKeyVaultName = '${appNamePrefix}Vault'
 var dotnetVersionParam = 'v${dotnetVersion}.0'
-var corsSupportCredentialsValue = empty(allowedOrigins) ? false : corsSupportCredentials
+var allowedOriginsArray = split(allowedOrigins, ',')
+var corsSupportCredentialsValue = empty(allowedOriginsArray) ? false : corsSupportCredentials
 
 module storageAccount 'modules/StorageAccount.bicep' = {
   name: 'storageAccount'
@@ -53,7 +54,7 @@ module storageAccount 'modules/StorageAccount.bicep' = {
     location: location
     storageAccountName: inputStorageAccountName
     storageAccountSku: storageAccountType
-    allowedOrigins: allowedOrigins
+    allowedOrigins: allowedOriginsArray
   }
 }
 
@@ -78,7 +79,7 @@ resource functionApp 'Microsoft.Web/sites@2022-09-01' = {
     serverFarmId: hostingPlan.id
     siteConfig: {
       cors:{
-        allowedOrigins: allowedOrigins
+        allowedOrigins: allowedOriginsArray
         supportCredentials: corsSupportCredentialsValue
       }
       ftpsState: 'Disabled'
@@ -102,7 +103,7 @@ resource functionAppStagingSlot 'Microsoft.Web/sites/slots@2022-09-01' = if (ena
     serverFarmId: hostingPlan.id
     siteConfig: {
       cors:{
-        allowedOrigins: allowedOrigins
+        allowedOrigins: allowedOriginsArray
         supportCredentials: corsSupportCredentialsValue
       }
       ftpsState: 'Disabled'

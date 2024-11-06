@@ -13,13 +13,14 @@ param storageAccountSku string = 'Standard_LRS'
 param location string = resourceGroup().location
 
 @description('Allowed CORS origins.')
-param allowedOrigins array = []
+param allowedOrigins string = ''
 
 @description('Specifies the principal ID to the resources that manages this storage account.')
 param contributorPrincipalId string = ''
 var contributorPrincipalIdValue = empty(contributorPrincipalId) ? 'dummy' : contributorPrincipalId
+var allowedOriginsArray = split(allowedOrigins, ',')
 
-resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
+resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
   name: storageAccountName
   location: location
   sku: {
@@ -99,14 +100,14 @@ resource tableContributorRoleAssignment 'Microsoft.Authorization/roleAssignments
   }
 }
 
-resource storageAccountTable 'Microsoft.Storage/storageAccounts/tableServices@2022-09-01' = if (!(empty(allowedOrigins))) {
+resource storageAccountTable 'Microsoft.Storage/storageAccounts/tableServices@2023-05-01' = if (!(empty(allowedOriginsArray))) {
   name: 'default'
   parent: storageAccount
   properties: {
     cors: {
       corsRules: [
         {
-          allowedOrigins: allowedOrigins
+          allowedOrigins: allowedOriginsArray
           maxAgeInSeconds: 0
           allowedHeaders: [
             '*'
@@ -125,14 +126,14 @@ resource storageAccountTable 'Microsoft.Storage/storageAccounts/tableServices@20
   }
 }
 
-resource storageAccountQueue 'Microsoft.Storage/storageAccounts/queueServices@2022-09-01' = if (!(empty(allowedOrigins))) {
+resource storageAccountQueue 'Microsoft.Storage/storageAccounts/queueServices@2023-05-01' = if (!(empty(allowedOriginsArray))) {
   name: 'default'
   parent: storageAccount
   properties: {
     cors: {
       corsRules: [
         {
-          allowedOrigins: allowedOrigins
+          allowedOrigins: allowedOriginsArray
           maxAgeInSeconds: 0
           allowedHeaders: [
             '*'
@@ -153,14 +154,14 @@ resource storageAccountQueue 'Microsoft.Storage/storageAccounts/queueServices@20
   }
 }
 
-resource storageAccountBlob 'Microsoft.Storage/storageAccounts/blobServices@2022-09-01' = if (!(empty(allowedOrigins))) {
+resource storageAccountBlob 'Microsoft.Storage/storageAccounts/blobServices@2023-05-01' = if (!(empty(allowedOriginsArray))) {
   name: 'default'
   parent: storageAccount
   properties: {
     cors: {
       corsRules: [
         {
-          allowedOrigins: allowedOrigins
+          allowedOrigins: allowedOriginsArray
           maxAgeInSeconds: 0
           allowedHeaders: [
             '*'
