@@ -22,8 +22,8 @@ parameters:
   type: string
   default: ''  
 - name: allowedOrigins
-  type: object
-  default: []
+  type: string
+  default: ''
 
 jobs:
 - deployment: Deploy
@@ -57,7 +57,7 @@ jobs:
               -endpointName $(cdnEndpointName)
               -enableCdn ${{ convertToJson(parameters.enableCdn) }}
               -enableStaticWebsite ${{ convertToJson(parameters.enableStaticWebsite) }}
-              -allowedOrigins ${{ convertToJson(parameters.allowedOrigins) }}
+              -allowedOrigins ${{ parameters.allowedOrigins }}
             deploymentMode: 'Incremental'
             deploymentName: 'DeployPipelineTemplate'
             deploymentOutputs: 'bicepOutputs'

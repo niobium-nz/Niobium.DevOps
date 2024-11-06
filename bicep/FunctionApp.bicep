@@ -45,7 +45,8 @@ var inputLogAnalyticsWorkspaceName = '${appNamePrefix}Logs'
 var inputStorageAccountName = toLower('${appNamePrefix}Store')
 var inputKeyVaultName = '${appNamePrefix}Vault'
 var dotnetVersionParam = 'v${dotnetVersion}.0'
-var corsSupportCredentialsValue = empty(allowedOrigins) ? false : corsSupportCredentials
+var allowedOriginsArray = split(allowedOrigins, ',')
+var corsSupportCredentialsValue = empty(allowedOriginsArray) ? false : corsSupportCredentials
 
 module storageAccount 'modules/StorageAccount.bicep' = {
   name: 'storageAccount'
@@ -57,7 +58,7 @@ module storageAccount 'modules/StorageAccount.bicep' = {
   }
 }
 
-resource hostingPlan 'Microsoft.Web/serverfarms@2022-09-01' = {
+resource hostingPlan 'Microsoft.Web/serverfarms@2024-04-01' = {
   name: inputHostingPlanName
   location: location
   sku: {
@@ -67,7 +68,7 @@ resource hostingPlan 'Microsoft.Web/serverfarms@2022-09-01' = {
   properties: {}
 }
 
-resource functionApp 'Microsoft.Web/sites@2022-09-01' = {
+resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
   name: inputFuncAppName
   location: location
   kind: 'functionapp'
@@ -78,7 +79,7 @@ resource functionApp 'Microsoft.Web/sites@2022-09-01' = {
     serverFarmId: hostingPlan.id
     siteConfig: {
       cors:{
-        allowedOrigins: allowedOrigins
+        allowedOrigins: allowedOriginsArray
         supportCredentials: corsSupportCredentialsValue
       }
       ftpsState: 'Disabled'
@@ -90,7 +91,7 @@ resource functionApp 'Microsoft.Web/sites@2022-09-01' = {
   }
 }
 
-resource functionAppStagingSlot 'Microsoft.Web/sites/slots@2022-09-01' = if (enableStagingSlot) {
+resource functionAppStagingSlot 'Microsoft.Web/sites/slots@2024-04-01' = if (enableStagingSlot) {
   parent: functionApp
   name: 'staging'
   location: location
@@ -102,7 +103,7 @@ resource functionAppStagingSlot 'Microsoft.Web/sites/slots@2022-09-01' = if (ena
     serverFarmId: hostingPlan.id
     siteConfig: {
       cors:{
-        allowedOrigins: allowedOrigins
+        allowedOrigins: allowedOriginsArray
         supportCredentials: corsSupportCredentialsValue
       }
       ftpsState: 'Disabled'

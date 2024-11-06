@@ -9,8 +9,8 @@ parameters:
   type: string  
   default: ''
 - name: allowedOrigins
-  type: object
-  default: []
+  type: string
+  default: ''
 
 steps:
 - task: AzureResourceManagerTemplateDeployment@3
@@ -26,7 +26,7 @@ steps:
     overrideParameters: >-
       -storageAccountName ${{ parameters.storageAccountName }}
       -contributorPrincipalId ${{ parameters.contributorPrincipalId }}
-      -allowedOrigins ${{ convertToJson(parameters.allowedOrigins) }}
+      -allowedOrigins ${{ parameters.allowedOrigins }}
     deploymentMode: 'Incremental'
     deploymentName: 'DeployPipelineTemplate'
     deploymentOutputs: 'newStorageAccountOutputs'

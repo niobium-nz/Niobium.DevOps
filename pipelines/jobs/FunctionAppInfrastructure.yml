@@ -28,8 +28,8 @@ parameters:
   type: string
   default: 'dotnet-isolated'  
 - name: allowedOrigins
-  type: object
-  default: []
+  type: string
+  default: ''
 - name: dotnetVersion
   type: string
   default: '8'
@@ -61,7 +61,7 @@ jobs:
         -enableStagingSlot ${{ convertToJson(parameters.enableStagingSlot) }}
         -customDomainNames ${{ convertToJson(parameters.customDomainNames) }}
         -customDomainNameManagedCertificate ${{ convertToJson(parameters.customDomainNameManagedCertificate) }}
-        -allowedOrigins ${{ convertToJson(parameters.allowedOrigins) }}
+        -allowedOrigins ${{ parameters.allowedOrigins }}
         -dotnetVersion ${{ parameters.dotnetVersion }}
         -corsSupportCredentials ${{ convertToJson(parameters.corsSupportCredentials) }}
       deploymentMode: 'Incremental'
