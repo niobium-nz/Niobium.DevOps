@@ -45,8 +45,7 @@ var inputLogAnalyticsWorkspaceName = '${appNamePrefix}Logs'
 var inputStorageAccountName = toLower('${appNamePrefix}Store')
 var inputKeyVaultName = '${appNamePrefix}Vault'
 var dotnetVersionParam = 'v${dotnetVersion}.0'
-var allowedOriginsArray = split(allowedOrigins, ',')
-var corsSupportCredentialsValue = empty(allowedOriginsArray) ? false : corsSupportCredentials
+var corsSupportCredentialsValue = empty(allowedOrigins) ? false : corsSupportCredentials
 
 module storageAccount 'modules/StorageAccount.bicep' = {
   name: 'storageAccount'
@@ -54,7 +53,7 @@ module storageAccount 'modules/StorageAccount.bicep' = {
     location: location
     storageAccountName: inputStorageAccountName
     storageAccountSku: storageAccountType
-    allowedOrigins: allowedOriginsArray
+    allowedOrigins: allowedOrigins
   }
 }
 
@@ -79,7 +78,7 @@ resource functionApp 'Microsoft.Web/sites@2022-09-01' = {
     serverFarmId: hostingPlan.id
     siteConfig: {
       cors:{
-        allowedOrigins: allowedOriginsArray
+        allowedOrigins: allowedOrigins
         supportCredentials: corsSupportCredentialsValue
       }
       ftpsState: 'Disabled'
@@ -103,7 +102,7 @@ resource functionAppStagingSlot 'Microsoft.Web/sites/slots@2022-09-01' = if (ena
     serverFarmId: hostingPlan.id
     siteConfig: {
       cors:{
-        allowedOrigins: allowedOriginsArray
+        allowedOrigins: allowedOrigins
         supportCredentials: corsSupportCredentialsValue
       }
       ftpsState: 'Disabled'
