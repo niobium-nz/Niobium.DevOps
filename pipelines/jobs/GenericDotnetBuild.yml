@@ -81,7 +81,7 @@ jobs:
       
   - task: ArchiveFiles@2
     displayName: 'Archive Build'
-    condition: and(succeeded(), eq(parameters.zipArtifact, true))
+    condition: and(succeeded(), eq(${{ parameters.zipArtifact }}, true))
     inputs:
       rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish'
       includeRootFolder: false
@@ -91,7 +91,7 @@ jobs:
 
   - task: CopyFiles@2
     displayName: 'Stage Build'
-    condition: and(succeeded(), eq(parameters.zipArtifact, false))
+    condition: and(succeeded(), eq(${{ parameters.zipArtifact }}, false))
     inputs:
       Contents: '$(System.DefaultWorkingDirectory)/src/**'
       TargetFolder: $(Build.ArtifactStagingDirectory)
