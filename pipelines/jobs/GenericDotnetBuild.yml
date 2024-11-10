@@ -93,7 +93,7 @@ jobs:
     displayName: 'Stage Build'
     condition: and(succeeded(), eq(${{ parameters.zipArtifact }}, false))
     inputs:
-      Contents: '$(System.DefaultWorkingDirectory)/src/**'
+      Contents: '$(System.DefaultWorkingDirectory)/publish/**'
       TargetFolder: $(Build.ArtifactStagingDirectory)
 
   - publish: $(Build.ArtifactStagingDirectory)
