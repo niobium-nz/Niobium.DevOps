@@ -45,7 +45,7 @@ var inputLogAnalyticsWorkspaceName = '${appNamePrefix}Logs'
 var inputStorageAccountName = toLower('${appNamePrefix}Store')
 var inputKeyVaultName = '${appNamePrefix}Vault'
 var dotnetVersionParam = 'v${dotnetVersion}.0'
-var allowedOriginsArray = split(allowedOrigins, ',')
+var allowedOriginsArray = empty(allowedOrigins) ? [] : split(allowedOrigins, ',')
 var corsSupportCredentialsValue = empty(allowedOriginsArray) ? false : corsSupportCredentials
 
 module storageAccount 'modules/StorageAccount.bicep' = {

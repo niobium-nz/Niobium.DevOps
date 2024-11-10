@@ -18,7 +18,7 @@ param storageAccountName string = 'website${uniqueString(resourceGroup().id)}'
 param storageSku string = 'Standard_LRS'
 
 @description('Allowed CORS origins.')
-param allowedOrigins array = []
+param allowedOrigins string = ''
 
 @description('The path to the web index document.')
 param indexDocumentPath string = 'index.html'
