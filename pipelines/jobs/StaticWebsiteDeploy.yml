@@ -24,6 +24,9 @@ parameters:
 - name: allowedOrigins
   type: string
   default: ''
+- name: deploymentSourcePath
+  type: string
+  default: ''
 
 jobs:
 - deployment: Deploy
@@ -75,7 +78,7 @@ jobs:
         - task: AzureFileCopy@6
           displayName: 'File Copy'
           inputs:
-            SourcePath: '$(Pipeline.Workspace)/drop/*'
+            SourcePath: '$(Pipeline.Workspace)/drop/${{ parameters.deploymentSourcePath }}*'
             azureSubscription: '${{ parameters.azureServiceConnection }}'
             Destination: AzureBlob
             storage: ${{ parameters.storageAccountName }}
