@@ -1,14 +1,15 @@
 param(
     [string]
-    $Root
+    $Source,
+    
+    [string]
+    $Includes
 )
 
 $pattern = "<!--\$\s*([a-zA-Z0-9-_]+\.[a-zA-Z0-9]+)\s*\$-->"
-dir $Root
-dir $Root\
-Write-Host "Processing includes for html files in: $Root"
+Write-Host "Processing includes for html files in: $Source"
 
-Get-ChildItem -Path "$Root\src" -Filter "*.*" -Recurse |
+Get-ChildItem -Path $Source -Filter "*.*" -Recurse |
 Foreach-Object {
     if ($_.Extension -eq ".htm" -or $_.Extension -eq ".html") {
         $html = Get-Content $_.FullName
@@ -17,7 +18,7 @@ Foreach-Object {
         foreach($result in $results)
         {
             $includeFile = $result.Groups[1].value
-            $includeFileFullPath = "$Root\includes\$includeFile"
+            $includeFileFullPath = "$Includes\$includeFile"
             if (!(Test-Path $includeFileFullPath)) {
                 throw "$includeFile not exist from includes."
             }

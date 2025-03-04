@@ -7,6 +7,9 @@ parameters:
 - name: sourceDir
   type: string
   default: 'src'
+- name: includesDir
+  type: string
+  default: 'includes'
 - name: dropDir
   type: string
   default: '$(Build.ArtifactStagingDirectory)'
@@ -31,7 +34,7 @@ jobs:
       azureSubscription: '${{ parameters.azureServiceConnection }}'
       scriptType: 'InlineScript'
       Inline: |
-        .\scripts\expand-html-includes.ps1 -Root '..\website\${{ parameters.sourceDir }}'
+        .\scripts\expand-html-includes.ps1 -Source '..\website\${{ parameters.sourceDir }}' -Includes '..\website\${{ parameters.includesDir }}'
       azurePowerShellVersion: 'latestVersion'
       pwsh: true
 
