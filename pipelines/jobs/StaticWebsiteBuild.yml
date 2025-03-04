@@ -16,7 +16,7 @@ jobs:
 
   steps:
   - ${{ parameters.checkoutDevopsStep }}
-- 
+
   - task: AzurePowerShell@5
     displayName: 'Expand HTML includes'
     inputs:
