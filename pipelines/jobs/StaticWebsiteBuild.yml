@@ -6,8 +6,10 @@ parameters:
   type: string
 - name: sourceDir
   type: string
+  default: 'src'
 - name: dropDir
   type: string
+  default: '$(Build.ArtifactStagingDirectory)'
 - name: checkoutDevopsStep
   type: step
 
@@ -18,10 +20,10 @@ jobs:
 
   steps:
   - checkout: self
-    submodules: true
+    path: website
 
   - ${{ parameters.checkoutDevopsStep }}
-
+    
   - task: AzurePowerShell@5
     displayName: 'Expand HTML includes'
     inputs:
@@ -29,15 +31,14 @@ jobs:
       scriptType: 'InlineScript'
       Inline: |
         dir $(System.DefaultWorkingDirectory)
-        dir $(System.DefaultWorkingDirectory)\Cod.Infrastructures\scripts\expand-html-includes.ps1
-        $(System.DefaultWorkingDirectory)\Cod.Infrastructures\scripts\expand-html-includes.ps1 -Root '${{ parameters.sourceDir }}'
+        $(System.DefaultWorkingDirectory)\Cod.Infrastructures\scripts\expand-html-includes.ps1 -Root '$(System.DefaultWorkingDirectory)\website\${{ parameters.sourceDir }}'
       azurePowerShellVersion: 'latestVersion'
       pwsh: true
 
   - task: CopyFiles@2
     displayName: 'Drop Static Website'
     inputs:
-      SourceFolder: '${{ parameters.sourceDir }}'
+      SourceFolder: '$(System.DefaultWorkingDirectory)\website\${{ parameters.sourceDir }}'
       Contents: '**'
       TargetFolder: '${{ parameters.dropDir }}'
     
