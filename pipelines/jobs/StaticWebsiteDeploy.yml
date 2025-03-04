@@ -75,16 +75,6 @@ jobs:
             azurePowerShellVersion: 'latestVersion'
             pwsh: true
 
-        - task: AzurePowerShell@5
-          displayName: 'Expand HTML includes'
-          inputs:
-            azureSubscription: '${{ parameters.azureServiceConnection }}'
-            scriptType: 'InlineScript'
-            Inline: |
-              "$(Build.SourcesDirectory)/scripts/expand-html-includes.ps1" -Root '$(Pipeline.Workspace)/drop/${{ parameters.deploymentSourcePath }}'
-            azurePowerShellVersion: 'latestVersion'
-            pwsh: true
-
         - task: AzureFileCopy@6
           displayName: 'File Copy'
           inputs:
