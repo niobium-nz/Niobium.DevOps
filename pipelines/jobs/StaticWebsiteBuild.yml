@@ -20,11 +20,11 @@ jobs:
   - task: AzurePowerShell@5
     displayName: 'Expand HTML includes'
     inputs:
-    scriptType: 'InlineScript'
-    Inline: |
+      scriptType: 'InlineScript'
+      Inline: |
         $(System.DefaultWorkingDirectory)/scripts/expand-html-includes.ps1 -Root '${{ parameters.sourceDir }}'
-    azurePowerShellVersion: 'latestVersion'
-    pwsh: true
+      azurePowerShellVersion: 'latestVersion'
+      pwsh: true
 
   - task: CopyFiles@2
     displayName: 'Drop Static Website'
