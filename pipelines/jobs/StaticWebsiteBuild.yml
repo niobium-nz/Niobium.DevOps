@@ -31,17 +31,16 @@ jobs:
       azureSubscription: '${{ parameters.azureServiceConnection }}'
       scriptType: 'InlineScript'
       Inline: |
-        dir
-        .\scripts\expand-html-includes.ps1 -Root '$(System.DefaultWorkingDirectory)\website\${{ parameters.sourceDir }}'
+        .\scripts\expand-html-includes.ps1 -Root '..\website\${{ parameters.sourceDir }}'
       azurePowerShellVersion: 'latestVersion'
       pwsh: true
 
   - task: CopyFiles@2
     displayName: 'Drop Static Website'
     inputs:
-      SourceFolder: '$(System.DefaultWorkingDirectory)\website\${{ parameters.sourceDir }}'
+      SourceFolder: '..\website\${{ parameters.sourceDir }}'
       Contents: '**'
       TargetFolder: '${{ parameters.dropDir }}'
     
-  - publish: '${{ parameters.sourceDir }}'
+  - publish: '${{ parameters.dropDir }}'
     artifact: drop
