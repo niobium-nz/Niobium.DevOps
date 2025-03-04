@@ -10,8 +10,8 @@ parameters:
 - name: dropDir
   type: string
   default: '$(Build.ArtifactStagingDirectory)'
-- name: checkoutDevopsStep
-  type: step
+- name: checkoutDevopsSteps
+  type: stepList
 
 jobs:
 - job: Build
@@ -21,18 +21,18 @@ jobs:
   steps:
   - checkout: self
     path: $(System.DefaultWorkingDirectory)\website
-
-  - ${{ parameters.checkoutDevopsStep }}
-    workspaceRepo: true
     
+  - ${{ each step in parameters.checkoutDevopsSteps }}:
+      - ${{ step }}
+
   - task: AzurePowerShell@5
     displayName: 'Expand HTML includes'
     inputs:
       azureSubscription: '${{ parameters.azureServiceConnection }}'
       scriptType: 'InlineScript'
       Inline: |
-        dir $(System.DefaultWorkingDirectory)
-        $(System.DefaultWorkingDirectory)\Cod.Infrastructures\scripts\expand-html-includes.ps1 -Root '$(System.DefaultWorkingDirectory)\website\${{ parameters.sourceDir }}'
+        dir
+        .\scripts\expand-html-includes.ps1 -Root '$(System.DefaultWorkingDirectory)\website\${{ parameters.sourceDir }}'
       azurePowerShellVersion: 'latestVersion'
       pwsh: true
 
