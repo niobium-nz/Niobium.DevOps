@@ -19,7 +19,6 @@ jobs:
   steps:
   - checkout: self
     submodules: true
-    workspaceRepo: true
 
   - ${{ parameters.checkoutDevopsStep }}
 
@@ -30,7 +29,7 @@ jobs:
       scriptType: 'InlineScript'
       Inline: |
         dir $(System.DefaultWorkingDirectory)
-        $(System.DefaultWorkingDirectory)\Cod.Infrastructures\scripts\expand-html-includes.ps1 -Root '${{ parameters.sourceDir }}'
+        $(System.DefaultWorkingDirectory)\..\Cod.Infrastructures\scripts\expand-html-includes.ps1 -Root '${{ parameters.sourceDir }}'
       azurePowerShellVersion: 'latestVersion'
       pwsh: true
 
