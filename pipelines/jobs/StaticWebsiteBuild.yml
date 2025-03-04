@@ -2,6 +2,8 @@ parameters:
 - name: buildAgentVmImage
   type: string
   default: 'windows-latest'
+- name: azureServiceConnection
+  type: string
 - name: sourceDir
   type: string
 - name: dropDir
@@ -20,6 +22,7 @@ jobs:
   - task: AzurePowerShell@5
     displayName: 'Expand HTML includes'
     inputs:
+      azureSubscription: '${{ parameters.azureServiceConnection }}'
       scriptType: 'InlineScript'
       Inline: |
         $(System.DefaultWorkingDirectory)/scripts/expand-html-includes.ps1 -Root '${{ parameters.sourceDir }}'
