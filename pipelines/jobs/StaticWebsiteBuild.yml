@@ -23,6 +23,7 @@ jobs:
     path: $(System.DefaultWorkingDirectory)\website
 
   - ${{ parameters.checkoutDevopsStep }}
+    workspaceRepo: true
     
   - task: AzurePowerShell@5
     displayName: 'Expand HTML includes'
