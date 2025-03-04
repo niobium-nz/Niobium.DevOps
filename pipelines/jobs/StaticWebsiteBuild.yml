@@ -17,6 +17,10 @@ jobs:
     vmImage: ${{ parameters.buildAgentVmImage }}
 
   steps:
+  - checkout: self
+    submodules: true
+    workspaceRepo: true
+
   - ${{ parameters.checkoutDevopsStep }}
 
   - task: AzurePowerShell@5
@@ -25,7 +29,7 @@ jobs:
       azureSubscription: '${{ parameters.azureServiceConnection }}'
       scriptType: 'InlineScript'
       Inline: |
-        $(System.DefaultWorkingDirectory)/scripts/expand-html-includes.ps1 -Root '${{ parameters.sourceDir }}'
+        $(System.DefaultWorkingDirectory)/Cod.Infrastructures/scripts/expand-html-includes.ps1 -Root '${{ parameters.sourceDir }}'
       azurePowerShellVersion: 'latestVersion'
       pwsh: true
 
