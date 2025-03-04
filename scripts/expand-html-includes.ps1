@@ -4,6 +4,8 @@ param(
 )
 
 $pattern = "<!--\$\s*([a-zA-Z0-9-_]+\.[a-zA-Z0-9]+)\s*\$-->"
+dir $Root
+dir $Root\
 Write-Host "Processing includes for html files in: $Root"
 
 Get-ChildItem -Path "$Root\src" -Filter "*.*" -Recurse |
