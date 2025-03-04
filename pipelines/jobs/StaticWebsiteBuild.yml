@@ -20,7 +20,7 @@ jobs:
 
   steps:
   - checkout: self
-    path: $(System.DefaultWorkingDirectory)\website
+    path: website
     
   - ${{ each step in parameters.checkoutDevopsSteps }}:
       - ${{ step }}
