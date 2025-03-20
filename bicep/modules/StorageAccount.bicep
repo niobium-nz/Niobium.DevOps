@@ -1,5 +1,5 @@
 @description('Specifies the name of the storage account.')
-param storageAccountName string = 'stor${uniqueString(resourceGroup().id)}'
+param storageAccountName string = 'niobiumbillingdb'
 
 @description('Specifies the SKU to use for the storage account.')
 @allowed([
@@ -16,7 +16,7 @@ param location string = resourceGroup().location
 param allowedOrigins string = ''
 
 @description('Specifies the principal ID to the resources that manages this storage account.')
-param contributorPrincipalId string = ''
+param contributorPrincipalId string = '72e62bcd-4a67-4d7a-b21b-583c40582220'
 var contributorPrincipalIdValue = empty(contributorPrincipalId) ? 'dummy' : contributorPrincipalId
 var allowedOriginsArray = split(allowedOrigins, ',')
 
@@ -100,7 +100,7 @@ resource tableContributorRoleAssignment 'Microsoft.Authorization/roleAssignments
   }
 }
 
-resource storageAccountTable 'Microsoft.Storage/storageAccounts/tableServices@2023-05-01' = if (!(empty(allowedOriginsArray))) {
+resource storageAccountTable 'Microsoft.Storage/storageAccounts/tableServices@2023-05-01' = if (!empty(allowedOriginsArray) && !contains(allowedOriginsArray, '')) {
   name: 'default'
   parent: storageAccount
   properties: {
@@ -126,7 +126,7 @@ resource storageAccountTable 'Microsoft.Storage/storageAccounts/tableServices@20
   }
 }
 
-resource storageAccountQueue 'Microsoft.Storage/storageAccounts/queueServices@2023-05-01' = if (!(empty(allowedOriginsArray))) {
+resource storageAccountQueue 'Microsoft.Storage/storageAccounts/queueServices@2023-05-01' = if (!empty(allowedOriginsArray) && !contains(allowedOriginsArray, '')) {
   name: 'default'
   parent: storageAccount
   properties: {
@@ -154,7 +154,7 @@ resource storageAccountQueue 'Microsoft.Storage/storageAccounts/queueServices@20
   }
 }
 
-resource storageAccountBlob 'Microsoft.Storage/storageAccounts/blobServices@2023-05-01' = if (!(empty(allowedOriginsArray))) {
+resource storageAccountBlob 'Microsoft.Storage/storageAccounts/blobServices@2023-05-01' = if (!empty(allowedOriginsArray) && !contains(allowedOriginsArray, '')) {
   name: 'default'
   parent: storageAccount
   properties: {
