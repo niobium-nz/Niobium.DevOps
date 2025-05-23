@@ -17,7 +17,7 @@ jobs:
     - Build
     - Infrastructure
     - Configuration
-  condition: succeeded()
+  condition: not(failed())
   environment: 'production'
   pool:
     vmImage: ${{ parameters.buildAgentVmImage }}
