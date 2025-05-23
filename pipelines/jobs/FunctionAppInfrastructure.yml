@@ -36,10 +36,13 @@ parameters:
 - name: corsSupportCredentials
   type: boolean
   default: false
+- name: enabled
+  type: boolean
+  default: true
 
 jobs:
 - job: Infrastructure
-  condition: succeeded()
+  condition: and(succeeded(), eq(${{ parameters.enabled }}, true))
   pool:
     vmImage: ${{ parameters.buildAgentVmImage }}
   steps:
