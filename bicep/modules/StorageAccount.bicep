@@ -113,9 +113,13 @@ resource storageAccountTable 'Microsoft.Storage/storageAccounts/tableServices@20
             '*'
           ]
           allowedMethods: [
-            'OPTIONS'
-            'HEAD'
+            'DELETE'
             'GET'
+            'HEAD'
+            'MERGE'
+            'POST'
+            'OPTIONS'
+            'PUT'
           ]
           exposedHeaders: [
             '*'
@@ -139,11 +143,13 @@ resource storageAccountQueue 'Microsoft.Storage/storageAccounts/queueServices@20
             '*'
           ]
           allowedMethods: [
-            'OPTIONS'
-            'HEAD'
+            'DELETE'
             'GET'
-            'PUT'
+            'HEAD'
+            'MERGE'
             'POST'
+            'OPTIONS'
+            'PUT'
           ]
           exposedHeaders: [
             '*'
@@ -167,12 +173,13 @@ resource storageAccountBlob 'Microsoft.Storage/storageAccounts/blobServices@2023
             '*'
           ]
           allowedMethods: [
-            'OPTIONS'
-            'HEAD'
-            'GET'
-            'PUT'
-            'POST'
             'DELETE'
+            'GET'
+            'HEAD'
+            'MERGE'
+            'POST'
+            'OPTIONS'
+            'PUT'
             'PATCH'
           ]
           exposedHeaders: [
