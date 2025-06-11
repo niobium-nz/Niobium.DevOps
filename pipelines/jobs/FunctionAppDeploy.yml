@@ -9,6 +9,8 @@ parameters:
 - name: enableStagingSlot
   type: boolean
   default: false
+- name: appName
+  type: string
 
 jobs:
 - deployment: Deploy
@@ -21,8 +23,6 @@ jobs:
   environment: 'production'
   pool:
     vmImage: ${{ parameters.buildAgentVmImage }}
-  variables:
-    functionAppName: $[ dependencies.Infrastructure.outputs['infrastructureOutputs.functionAppName'] ]  
 
   strategy:
     runOnce:
@@ -42,7 +42,7 @@ jobs:
             connectedServiceNameARM: ${{ parameters.serviceConnection }}
             resourceGroupName: ${{ parameters.resourceGroupName }}
             appType: functionApp
-            appName: $(functionAppName)
+            appName: ${{ parameters.appName }}
             slotName: $(slotName)
             deployToSlotOrASE: ${{ parameters.enableStagingSlot }}
             package: '$(Pipeline.Workspace)/drop/$(Build.BuildNumber).zip'
