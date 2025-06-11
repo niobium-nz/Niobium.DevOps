@@ -39,7 +39,7 @@ param allowedOrigins string = ''
 param corsSupportCredentials bool = false
 
 var inputFuncAppName = appName
-var appNamePrefix = endsWith(appName, 'Func') ? appName : '${appName}Func'
+var appNamePrefix = endsWith(appName, 'Func') ? substring(appName, 0, length(appName) - 4) : appName
 var inputHostingPlanName = '${appNamePrefix}Plan'
 var inputApplicationInsightsName = '${appNamePrefix}Insights'
 var inputLogAnalyticsWorkspaceName = '${appNamePrefix}Logs'
