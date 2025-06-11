@@ -39,11 +39,12 @@ param allowedOrigins string = ''
 param corsSupportCredentials bool = false
 
 var inputFuncAppName = appName
-var inputHostingPlanName = '${appName}Plan'
-var inputApplicationInsightsName = '${appName}Insights'
-var inputLogAnalyticsWorkspaceName = '${appName}Logs'
-var inputStorageAccountName = toLower('${appName}Store')
-var inputKeyVaultName = '${appName}Vault'
+var appNamePrefix = endsWith(appName, 'Func') ? appName : '${appName}Func'
+var inputHostingPlanName = '${appNamePrefix}Plan'
+var inputApplicationInsightsName = '${appNamePrefix}Insights'
+var inputLogAnalyticsWorkspaceName = '${appNamePrefix}Logs'
+var inputStorageAccountName = toLower('${appNamePrefix}Store')
+var inputKeyVaultName = '${appNamePrefix}Vault'
 var dotnetVersionParam = 'v${dotnetVersion}.0'
 var allowedOriginsArray = empty(allowedOrigins) ? [] : split(allowedOrigins, ',')
 var corsSupportCredentialsValue = empty(allowedOriginsArray) ? false : corsSupportCredentials
