@@ -9,6 +9,9 @@ parameters:
 - name: enableStagingSlot
   type: boolean
   default: false
+- name: autoSwapSlots
+  type: boolean
+  default: false
 - name: appName
   type: string
 
@@ -46,3 +49,14 @@ jobs:
             slotName: $(slotName)
             deployToSlotOrASE: ${{ parameters.enableStagingSlot }}
             package: '$(Pipeline.Workspace)/drop/$(Build.BuildNumber).zip'
+            
+        - task: AzureAppServiceManage@0
+          displayName: 'Swap Production'
+          condition: and('${{ parameters.autoSwapSlots }}', eq('${{ parameters.enableStagingSlot }}', true))
+          inputs:
+            azureSubscription: ${{ parameters.serviceConnection }}
+            ResourceGroupName: ${{ parameters.resourceGroupName }}
+            Action: 'Swap Slots'
+            WebAppName: ${{ parameters.appName }}
+            SourceSlot: $(slotName)
+            SwapWithProduction: true
