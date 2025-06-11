@@ -1,5 +1,5 @@
 @description('The name of the function app that you wish to create.')
-param appNamePrefix string = 'fnapp${uniqueString(resourceGroup().id)}'
+param appName string = 'fnapp${uniqueString(resourceGroup().id)}'
 
 @description('Storage Account type')
 @allowed([
@@ -38,12 +38,12 @@ param allowedOrigins string = ''
 @description('Whether to enable Access-Control-Allow-Credentials on CORS.')
 param corsSupportCredentials bool = false
 
-var inputFuncAppName = '${appNamePrefix}Func'
-var inputHostingPlanName = '${appNamePrefix}Plan'
-var inputApplicationInsightsName = '${appNamePrefix}Insights'
-var inputLogAnalyticsWorkspaceName = '${appNamePrefix}Logs'
-var inputStorageAccountName = toLower('${appNamePrefix}Store')
-var inputKeyVaultName = '${appNamePrefix}Vault'
+var inputFuncAppName = appName
+var inputHostingPlanName = '${appName}Plan'
+var inputApplicationInsightsName = '${appName}Insights'
+var inputLogAnalyticsWorkspaceName = '${appName}Logs'
+var inputStorageAccountName = toLower('${appName}Store')
+var inputKeyVaultName = '${appName}Vault'
 var dotnetVersionParam = 'v${dotnetVersion}.0'
 var allowedOriginsArray = empty(allowedOrigins) ? [] : split(allowedOrigins, ',')
 var corsSupportCredentialsValue = empty(allowedOriginsArray) ? false : corsSupportCredentials

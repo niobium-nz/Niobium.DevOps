@@ -3,7 +3,7 @@ parameters:
   type: string
 - name: resourceGroupName
   type: string
-- name: appNamePrefix
+- name: appName
   type: string
 - name: buildAgentVmImage
   type: string
@@ -59,7 +59,7 @@ jobs:
       templateLocation: 'Linked artifact'
       csmFile: '$(Build.SourcesDirectory)/bicep/FunctionApp.bicep'
       overrideParameters: >-
-        -appNamePrefix ${{ parameters.appNamePrefix }}
+        -appName ${{ parameters.appName }}
         -enableKeyVault ${{ convertToJson(parameters.enableKeyVault) }}
         -enableStagingSlot ${{ convertToJson(parameters.enableStagingSlot) }}
         -customDomainNames ${{ convertToJson(parameters.customDomainNames) }}
