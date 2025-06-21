@@ -5,8 +5,9 @@ parameters:
   type: string
 - name: serviceBusNamespaceName
   type: string  
-- name: serviceBusQueueName
-  type: string  
+- name: serviceBusQueueNames
+  type: object
+  default: []
 - name: serviceBusSku
   type: string
   default: 'Basic'
@@ -27,7 +28,7 @@ steps:
     csmFile: '$(Build.SourcesDirectory)/bicep/modules/ServiceBus.bicep'
     overrideParameters: >-
       -serviceBusNamespaceName ${{ parameters.serviceBusNamespaceName }}
-      -serviceBusQueueName ${{ parameters.serviceBusQueueName }}
+      -serviceBusQueueNames ${{ convertToJson(parameters.serviceBusQueueNames) }}
       -serviceBusSku ${{ parameters.serviceBusSku }}
       -dataOwnerPrincipalId ${{ parameters.dataOwnerPrincipalId }}
     deploymentMode: 'Incremental'

@@ -1,8 +1,8 @@
 @description('Name of the Service Bus namespace')
 param serviceBusNamespaceName string
 
-@description('Name of the Queue')
-param serviceBusQueueName string
+@description('Name of the Queues')
+param serviceBusQueueNames array = []
 
 @description('Location for all resources.')
 param location string = resourceGroup().location
@@ -29,7 +29,7 @@ resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2023-01-01-preview
   properties: {}
 }
 
-resource serviceBusQueue 'Microsoft.ServiceBus/namespaces/queues@2023-01-01-preview' = {
+resource serviceBusQueues 'Microsoft.ServiceBus/namespaces/queues@2023-01-01-preview' = [for serviceBusQueueName in serviceBusQueueNames: {
   parent: serviceBusNamespace
   name: serviceBusQueueName
   properties: {
@@ -44,27 +44,27 @@ resource serviceBusQueue 'Microsoft.ServiceBus/namespaces/queues@2023-01-01-prev
     enablePartitioning: false
     enableExpress: false
   }
-}
+}]
 
-resource sendAuthorizationRules 'Microsoft.ServiceBus/namespaces/queues/authorizationRules@2023-01-01-preview' = {
-  name: '${serviceBusQueueName}-2'
+resource sendAuthorizationRules 'Microsoft.ServiceBus/namespaces/queues/authorizationRules@2023-01-01-preview' = [for serviceBusQueue in serviceBusQueues: {
+  name: '${serviceBusQueue.name}-2'
   parent: serviceBusQueue
   properties: {
     rights: [
       'Send'
     ]
   }
-}
+}]
 
-resource listenAuthorizationRules 'Microsoft.ServiceBus/namespaces/queues/authorizationRules@2023-01-01-preview' = {
-  name: '${serviceBusQueueName}-8'
+resource listenAuthorizationRules 'Microsoft.ServiceBus/namespaces/queues/authorizationRules@2023-01-01-preview' = [for serviceBusQueue in serviceBusQueues: {
+  name: '${serviceBusQueue.name}-8'
   parent: serviceBusQueue
   properties: {
     rights: [
       'Listen'
     ]
   }
-}
+}]
 
 @description('This is the built-in Azure Service Bus Data Owner role. See https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#storage-account-contributor')
 resource serviceBusDataOwnerRoleDefinition 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
