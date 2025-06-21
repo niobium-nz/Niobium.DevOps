@@ -46,9 +46,9 @@ resource serviceBusQueues 'Microsoft.ServiceBus/namespaces/queues@2023-01-01-pre
   }
 }]
 
-resource sendAuthorizationRules 'Microsoft.ServiceBus/namespaces/queues/authorizationRules@2023-01-01-preview' = [for serviceBusQueue in serviceBusQueues: {
-  name: '${serviceBusQueue.name}-2'
-  parent: serviceBusQueue
+resource sendAuthorizationRules 'Microsoft.ServiceBus/namespaces/queues/authorizationRules@2023-01-01-preview' = [for i in range(0, length(serviceBusQueues)): {
+  name: '${serviceBusQueues[i].name}-2'
+  parent: serviceBusQueues[i]
   properties: {
     rights: [
       'Send'
@@ -56,9 +56,9 @@ resource sendAuthorizationRules 'Microsoft.ServiceBus/namespaces/queues/authoriz
   }
 }]
 
-resource listenAuthorizationRules 'Microsoft.ServiceBus/namespaces/queues/authorizationRules@2023-01-01-preview' = [for serviceBusQueue in serviceBusQueues: {
-  name: '${serviceBusQueue.name}-8'
-  parent: serviceBusQueue
+resource listenAuthorizationRules 'Microsoft.ServiceBus/namespaces/queues/authorizationRules@2023-01-01-preview' = [for i in range(0, length(serviceBusQueues)): {
+  name: '${serviceBusQueues[i].name}-8'
+  parent: serviceBusQueues[i]
   properties: {
     rights: [
       'Listen'
