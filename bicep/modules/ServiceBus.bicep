@@ -19,7 +19,7 @@ param serviceBusSku string = 'Basic'
 param dataOwnerPrincipalId string = ''
 var dataOwnerPrincipalIdValue = empty(dataOwnerPrincipalId) ? 'dummy' : dataOwnerPrincipalId
 
-resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2023-01-01-preview' = {
+resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2024-01-01' = {
   name: serviceBusNamespaceName
   location: location
   sku: {
@@ -29,7 +29,7 @@ resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2023-01-01-preview
   properties: {}
 }
 
-resource serviceBusQueues 'Microsoft.ServiceBus/namespaces/queues@2023-01-01-preview' = [for serviceBusQueueName in serviceBusQueueNames: {
+resource serviceBusQueues 'Microsoft.ServiceBus/namespaces/queues@2024-01-01' = [for serviceBusQueueName in serviceBusQueueNames: {
   parent: serviceBusNamespace
   name: serviceBusQueueName
   properties: {
@@ -46,8 +46,8 @@ resource serviceBusQueues 'Microsoft.ServiceBus/namespaces/queues@2023-01-01-pre
   }
 }]
 
-resource sendAuthorizationRules 'Microsoft.ServiceBus/namespaces/queues/authorizationRules@2023-01-01-preview' = [for i in range(0, length(serviceBusQueues)): {
-  name: '${serviceBusQueues[i].name}-2'
+resource sendAuthorizationRules 'Microsoft.ServiceBus/namespaces/queues/authorizationRules@2024-01-01' = [for (serviceBusQueueName, i) in serviceBusQueueNames: {
+  name: '${serviceBusQueueName}-2'
   parent: serviceBusQueues[i]
   properties: {
     rights: [
@@ -56,8 +56,8 @@ resource sendAuthorizationRules 'Microsoft.ServiceBus/namespaces/queues/authoriz
   }
 }]
 
-resource listenAuthorizationRules 'Microsoft.ServiceBus/namespaces/queues/authorizationRules@2023-01-01-preview' = [for i in range(0, length(serviceBusQueues)): {
-  name: '${serviceBusQueues[i].name}-8'
+resource listenAuthorizationRules 'Microsoft.ServiceBus/namespaces/queues/authorizationRules@2024-01-01' = [for (serviceBusQueueName, i) in serviceBusQueueNames: {
+  name: '${serviceBusQueueName}-8'
   parent: serviceBusQueues[i]
   properties: {
     rights: [
