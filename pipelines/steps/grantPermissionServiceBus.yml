@@ -1,0 +1,32 @@
+parameters:
+- name: azureServiceConnection
+  type: string
+- name: resourceGroupName
+  type: string
+- name: serviceBusNamespaceName
+  type: string  
+- name: dataOwnerPrincipalId
+  type: string
+
+steps:
+- task: AzureResourceManagerTemplateDeployment@3
+  displayName: 'Service Bus Permission: ${{ parameters.serviceBusNamespaceName }}'
+  inputs:
+    deploymentScope: 'Resource Group'
+    azureResourceManagerConnection: ${{ parameters.azureServiceConnection }}
+    action: 'Create Or Update Resource Group'
+    resourceGroupName: ${{ parameters.resourceGroupName }}
+    location: '$(location)'
+    templateLocation: 'Linked artifact'
+    csmFile: '$(Build.SourcesDirectory)/bicep/modules/ServiceBusPermission.bicep'
+    overrideParameters: >-
+      -serviceBusNamespaceName ${{ parameters.serviceBusNamespaceName }}
+      -dataOwnerPrincipalId ${{ parameters.dataOwnerPrincipalId }}
+    deploymentMode: 'Incremental'
+    deploymentName: 'DeployPipelineTemplate'
+    deploymentOutputs: 'serviceBusPermissionOutputs'
+    
+- template: parseBicepResult.yml
+  parameters:
+    inputJSONValue: '$(serviceBusPermissionOutputs)'
+    outputVariableName: 'serviceBusPermissionProperties'
