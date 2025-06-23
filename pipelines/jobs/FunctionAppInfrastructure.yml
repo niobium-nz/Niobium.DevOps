@@ -83,7 +83,7 @@ jobs:
     functionAppName: $[dependencies.Infrastructure.outputs['infrastructureOutputs.functionAppName']]
     functionAppContentShareName: $[dependencies.Infrastructure.outputs['infrastructureOutputs.functionAppContentShareName']]
     storageAccountConnectionString: $[dependencies.Infrastructure.outputs['infrastructureOutputs.storageAccountConnectionString']]  
-    applicationInsightsInstrumentationKey: $[dependencies.Infrastructure.outputs['infrastructureOutputs.applicationInsightsInstrumentationKey']]
+    applicationInsightsConnectionString: $[dependencies.Infrastructure.outputs['infrastructureOutputs.applicationInsightsConnectionString']]
   pool:
     vmImage: ${{ parameters.buildAgentVmImage }}
   steps:
@@ -121,8 +121,8 @@ jobs:
             "slotSetting": false
           },
           {
-            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-            "value": "$(applicationInsightsInstrumentationKey)",
+            "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
+            "value": "$(applicationInsightsConnectionString)",
             "slotSetting": false
           },
           {
@@ -173,8 +173,8 @@ jobs:
             "slotSetting": false
           },
           {
-            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-            "value": "$(applicationInsightsInstrumentationKey)",
+            "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
+            "value": "$(applicationInsightsConnectionString)",
             "slotSetting": false
           },
           {
