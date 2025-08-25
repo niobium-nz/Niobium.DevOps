@@ -1,0 +1,99 @@
+name: Dotnet Publish
+
+on:
+  workflow_call:
+    inputs:
+      dotnetVersion:
+        required: false
+        type: string
+        default: '9.x'
+      projectToPublish:
+        required: false
+        type: string
+        default: '**/*.csproj'
+      zipArtifact:
+        required: false
+        type: boolean
+        default: false
+      nugetFeedUrl:
+        required: false
+        type: string
+        default: ''
+      nugetApiKey:
+        required: false
+        type: string
+        default: ''
+    secrets:
+      NUGET_API_KEY:
+        required: false
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        submodules: true
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ inputs.dotnetVersion }}
+
+    - name: Restore Packages
+      run: dotnet restore "**/*.csproj"
+
+    - name: Build Projects
+      run: dotnet build "**/*.csproj" --configuration Release
+
+    - name: Run Unit Tests
+      run: dotnet test "**/*Tests/*.csproj" --configuration Release --logger trx --collect "Code coverage"
+      continue-on-error: true
+
+    - name: Publish Test Results
+      if: always()
+      uses: dorny/test-reporter@v1
+      with:
+        name: Test Results
+        path: '**/*.trx'
+        reporter: dotnet-trx
+      continue-on-error: true
+
+    - name: Generate Coverage Report
+      uses: danielpalme/ReportGenerator-GitHub-Action@v6
+      with:
+        reports: '**/TestResults/*/coverage.cobertura.xml'
+        targetdir: 'coverage-report'
+        reporttypes: 'HtmlInline_AzurePipelines;Cobertura'
+      continue-on-error: true
+
+    - name: Upload Coverage Report
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: coverage-report
+      continue-on-error: true
+
+    - name: Publish NuGet Package
+      if: ${{ inputs.nugetFeedUrl != '' && inputs.nugetApiKey != '' }}
+      run: dotnet nuget push "**/*.nupkg" --source "${{ inputs.nugetFeedUrl }}" --api-key "${{ secrets.NUGET_API_KEY }}"
+
+    - name: Publish Build
+      if: ${{ inputs.projectToPublish != '' }}
+      run: dotnet publish "${{ inputs.projectToPublish }}" --configuration Release --output ./publish/
+
+    - name: Archive Build
+      if: ${{ inputs.zipArtifact && inputs.projectToPublish != '' }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-zip
+        path: ./publish/
+
+    - name: Stage Build (Unzipped)
+      if: ${{ !inputs.zipArtifact && inputs.projectToPublish != '' }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-folder
+        path: ./publish/
