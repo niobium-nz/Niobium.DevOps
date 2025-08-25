@@ -19,10 +19,9 @@ on:
         required: false
         type: string
         default: 'https://api.nuget.org/v3/index.json'
-      nugetApiKey:
+    secrets:
+      NUGET_API_KEY:
         required: false
-        type: string
-        default: ''
 
 jobs:
   build:
@@ -71,13 +70,13 @@ jobs:
         path: coverage-report
 
     - name: Publish NuGet Package
-      if: ${{ inputs.nugetApiKey != '' }}
+      if: ${{ secrets.NUGET_API_KEY != '' }}
       run: |
         Get-ChildItem -Path . -Recurse -Filter *.nupkg | ForEach-Object {
-          dotnet nuget push $_.FullName --source "${{ inputs.nugetFeedUrl }}" --api-key "${{ inputs.nugetApiKey }}"
+          dotnet nuget push $_.FullName --source "${{ inputs.nugetFeedUrl }}" --api-key "${{ secrets.NUGET_API_KEY }}"
         }
         Get-ChildItem -Path . -Recurse -Filter *.snupkg | ForEach-Object {
-          dotnet nuget push $_.FullName --source "${{ inputs.nugetFeedUrl }}" --api-key "${{ inputs.nugetApiKey }}"
+          dotnet nuget push $_.FullName --source "${{ inputs.nugetFeedUrl }}" --api-key "${{ secrets.NUGET_API_KEY }}"
         }
       shell: pwsh
 
