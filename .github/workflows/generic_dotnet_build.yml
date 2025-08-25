@@ -10,7 +10,7 @@ on:
       projectToPublish:
         required: false
         type: string
-        default: '**/*.csproj'
+        default: ''
       zipArtifact:
         required: false
         type: boolean
@@ -50,10 +50,8 @@ jobs:
 
     - name: Run Unit Tests
       run: dotnet test --configuration Release --logger trx --collect "Code coverage"
-      continue-on-error: true
 
     - name: Publish Test Results
-      if: always()
       uses: dorny/test-reporter@v2
       with:
         name: Test Results
@@ -74,11 +72,17 @@ jobs:
       with:
         name: coverage-report
         path: coverage-report
-      continue-on-error: true
 
     - name: Publish NuGet Package
       if: ${{ inputs.nugetFeedUrl != '' && inputs.nugetApiKey != '' }}
-      run: dotnet nuget push --source "${{ inputs.nugetFeedUrl }}" --api-key "${{ secrets.NUGET_API_KEY }}"
+      run: |
+        Get-ChildItem -Path . -Recurse -Filter *.nupkg | ForEach-Object {
+          dotnet nuget push $_.FullName --source "${{ inputs.nugetFeedUrl }}" --api-key "${{ secrets.NUGET_API_KEY }}"
+        }
+        Get-ChildItem -Path . -Recurse -Filter *.snupkg | ForEach-Object {
+          dotnet nuget push $_.FullName --source "${{ inputs.nugetFeedUrl }}" --api-key "${{ secrets.NUGET_API_KEY }}"
+        }
+      shell: pwsh
 
     - name: Publish Build
       if: ${{ inputs.projectToPublish != '' }}
