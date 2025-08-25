@@ -73,12 +73,14 @@ jobs:
       if: ${{ secrets.NUGET_API_KEY != '' }}
       run: |
         Get-ChildItem -Path . -Recurse -Filter *.nupkg | ForEach-Object {
-          dotnet nuget push $_.FullName --source "${{ inputs.nugetFeedUrl }}" --api-key "${{ secrets.NUGET_API_KEY }}"
+          dotnet nuget push $_.FullName --source "${{ inputs.nugetFeedUrl }}" --api-key "$env:NUGET_API_KEY"
         }
         Get-ChildItem -Path . -Recurse -Filter *.snupkg | ForEach-Object {
-          dotnet nuget push $_.FullName --source "${{ inputs.nugetFeedUrl }}" --api-key "${{ secrets.NUGET_API_KEY }}"
+          dotnet nuget push $_.FullName --source "${{ inputs.nugetFeedUrl }}" --api-key "$env:NUGET_API_KEY"
         }
       shell: pwsh
+      env:
+        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
 
     - name: Publish Build
       if: ${{ inputs.projectToPublish != '' }}
