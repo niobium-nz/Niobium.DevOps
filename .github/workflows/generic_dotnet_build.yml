@@ -62,11 +62,11 @@ jobs:
       continue-on-error: true
 
     - name: Generate Coverage Report
-      uses: danielpalme/ReportGenerator-GitHub-Action@v6
+      uses: danielpalme/ReportGenerator-GitHub-Action@5.4.12
       with:
         reports: '**/TestResults/*/coverage.cobertura.xml'
         targetdir: 'coverage-report'
-        reporttypes: 'HtmlInline_AzurePipelines;Cobertura'
+        reporttypes: 'HtmlInline;Cobertura'
       continue-on-error: true
 
     - name: Upload Coverage Report
