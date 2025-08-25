@@ -43,18 +43,18 @@ jobs:
         dotnet-version: ${{ inputs.dotnetVersion }}
 
     - name: Restore Packages
-      run: dotnet restore "**/*.csproj"
+      run: dotnet restore
 
     - name: Build Projects
-      run: dotnet build "**/*.csproj" --configuration Release
+      run: dotnet build --configuration Release
 
     - name: Run Unit Tests
-      run: dotnet test "**/*Tests/*.csproj" --configuration Release --logger trx --collect "Code coverage"
+      run: dotnet test --configuration Release --logger trx --collect "Code coverage"
       continue-on-error: true
 
     - name: Publish Test Results
       if: always()
-      uses: dorny/test-reporter@v1
+      uses: dorny/test-reporter@v2
       with:
         name: Test Results
         path: '**/*.trx'
@@ -78,7 +78,7 @@ jobs:
 
     - name: Publish NuGet Package
       if: ${{ inputs.nugetFeedUrl != '' && inputs.nugetApiKey != '' }}
-      run: dotnet nuget push "**/*.nupkg" --source "${{ inputs.nugetFeedUrl }}" --api-key "${{ secrets.NUGET_API_KEY }}"
+      run: dotnet nuget push --source "${{ inputs.nugetFeedUrl }}" --api-key "${{ secrets.NUGET_API_KEY }}"
 
     - name: Publish Build
       if: ${{ inputs.projectToPublish != '' }}
