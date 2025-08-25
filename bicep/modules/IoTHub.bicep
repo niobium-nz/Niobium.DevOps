@@ -88,7 +88,7 @@ resource consumerGroup 'Microsoft.Devices/IotHubs/eventHubEndpoints/ConsumerGrou
 
 resource primaryCertificate 'Microsoft.Devices/IotHubs/certificates@2023-06-30' = {
   parent: iotHub
-  name: 'cod-intermediate-primary'
+  name: 'intermediate-primary'
   properties: {
     certificate: primaryCert
     isVerified: true
@@ -97,7 +97,7 @@ resource primaryCertificate 'Microsoft.Devices/IotHubs/certificates@2023-06-30' 
 
 resource secondaryCertificate 'Microsoft.Devices/IotHubs/certificates@2023-06-30' = {
   parent: iotHub
-  name: 'cod-intermediate-secondary'
+  name: 'intermediate-secondary'
   properties: {
     certificate: secondaryCert
     isVerified: true
