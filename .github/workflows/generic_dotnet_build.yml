@@ -15,6 +15,10 @@ on:
         required: false
         type: boolean
         default: false
+      pushPackage:
+        required: false
+        type: boolean
+        default: false
       nugetFeedUrl:
         required: false
         type: string
@@ -70,7 +74,7 @@ jobs:
         path: coverage-report
 
     - name: Publish NuGet Package
-      if: ${{ secrets.NUGET_API_KEY != '' }}
+      if: ${{ inputs.pushPackage }}
       run: |
         Get-ChildItem -Path . -Recurse -Filter *.nupkg | ForEach-Object {
           dotnet nuget push $_.FullName --source "${{ inputs.nugetFeedUrl }}" --api-key "$env:NUGET_API_KEY"
