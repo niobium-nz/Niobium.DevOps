@@ -46,10 +46,10 @@ jobs:
       run: dotnet restore
 
     - name: Build Projects
-      run: dotnet build --configuration Release
+      run: dotnet build --configuration Release /p:BuildNumber=${{ github.run_id }}
 
     - name: Run Unit Tests
-      run: dotnet test --configuration Release --logger trx --collect "Code coverage"
+      run: dotnet test --configuration Release /p:BuildNumber=${{ github.run_id }} --logger trx --collect "Code coverage"
 
     - name: Publish Test Results
       uses: dorny/test-reporter@v2
@@ -88,7 +88,7 @@ jobs:
 
     - name: Publish Build
       if: ${{ inputs.projectToPublish != '' }}
-      run: dotnet publish "${{ inputs.projectToPublish }}" --configuration Release --output ./publish/
+      run: dotnet publish "${{ inputs.projectToPublish }}" /p:BuildNumber=${{ github.run_id }} --configuration Release --output ./publish/
 
     - name: Archive Build
       if: ${{ inputs.zipArtifact && inputs.projectToPublish != '' }}
