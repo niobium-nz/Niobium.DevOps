@@ -6,7 +6,7 @@ on:
       dotnetVersion:
         required: false
         type: string
-        default: '9.x'
+        default: '10.x'
       projectToPublish:
         required: false
         type: string
@@ -37,12 +37,12 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       with:
         submodules: true
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: ${{ inputs.dotnetVersion }}
 
@@ -56,7 +56,7 @@ jobs:
       run: dotnet test --configuration Release /p:BUILD_BUILDNUMBER=${{ inputs.buildVersion }}.${{ github.run_number }} --logger trx --collect "Code coverage"
 
     - name: Publish Test Results
-      uses: dorny/test-reporter@v2
+      uses: dorny/test-reporter@v3
       with:
         name: Test Results
         path: '**/*.trx'
@@ -64,7 +64,7 @@ jobs:
       continue-on-error: true
 
     - name: Generate Coverage Report
-      uses: danielpalme/ReportGenerator-GitHub-Action@5.4.12
+      uses: danielpalme/ReportGenerator-GitHub-Action@5.5.10
       with:
         reports: '**/TestResults/*/coverage.cobertura.xml'
         targetdir: 'coverage-report'
@@ -72,7 +72,7 @@ jobs:
       continue-on-error: true
 
     - name: Upload Coverage Report
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: coverage-report
         path: coverage-report
@@ -96,14 +96,14 @@ jobs:
 
     - name: Archive Build
       if: ${{ inputs.zipArtifact && inputs.projectToPublish != '' }}
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: build-zip
         path: ./publish/
 
     - name: Stage Build (Unzipped)
       if: ${{ !inputs.zipArtifact && inputs.projectToPublish != '' }}
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: build-folder
         path: ./publish/
