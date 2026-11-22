@@ -16,15 +16,21 @@ values. For example, Notification uses the prefix `niobiumnotify`.
 | Application Insights | `<prefix>-appi-<env>` | `niobiuminvoicing-appi-test` | `niobiumagents-appi-prod` |
 | Log Analytics workspace | `<prefix>-log-<env>` | `niobiuminvoicing-log-test` | `niobiumagents-log-prod` |
 | Key Vault | `<prefix>-kv-<env>` | `niobiuminvoicing-kv-test` | `niobiumagents-kv-prod` |
-| Functions host/package storage account | `<prefix>sts<env>` | `niobiuminvoicingststest` | `niobiumagentsstsprod` |
+| Functions deployment package storage account | `<prefix>sts<env>` | `niobiuminvoicingststest` | `niobiumagentsstsprod` |
 | Application data storage account | `<prefix>std<env>` | `niobiuminvoicingstdtest` | `niobiumagentsstdprod` |
 
 In the service-owned Invoicing and Driver modules, Bicep composes the prefix,
 resource abbreviation and environment. A Service Bus namespace, when the service uses one, follows
 `<prefix>-sb-<env>`. Storage account names concatenate the lowercase prefix,
-`st`, the purpose letter (`s` for host/package or `d` for data), and the
+`st`, the purpose letter (`s` for deployment packages or `d` for application data), and the
 environment. Check the complete name against Azure's length and uniqueness
 constraints. [Invoicing host module](https://github.com/niobium-nz/Niobium.Invoicing/blob/0b4ffa7a7c6d255e7d3f0db7553cc87a807959a9/infra/function-app.bicep) · [Application resources](https://github.com/niobium-nz/Niobium.Invoicing/blob/0b4ffa7a7c6d255e7d3f0db7553cc87a807959a9/infra/main.bicep)
+
+`functionAppConfig.deployment.storage` points to the package container in `sts`.
+The service configures `AzureWebJobsStorage` separately. Invoicing, Identity,
+Notification and Store use `std` for its Blob and Table endpoints. Driver uses
+`sts` for its Blob, Queue and Table endpoints so its `std` account can start
+empty. [Invoicing runtime endpoints](https://github.com/niobium-nz/Niobium.Invoicing/blob/0b4ffa7a7c6d255e7d3f0db7553cc87a807959a9/infra/main.bicep#L102-L110) · [Driver runtime endpoints](https://github.com/niobium-nz/Niobium.AI.Agent.Driver/blob/7f266bb1fe3ac1ee322ce437fd12d94de2a3496a/infra/function-app.bicep#L57-L61)
 
 Record each new service's approved slug, prefix and environments in its
 deployment guidance. Region, hostname and which resources to provision are
