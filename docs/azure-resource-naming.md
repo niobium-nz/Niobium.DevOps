@@ -19,8 +19,8 @@ values. For example, Notification uses the prefix `niobiumnotify`.
 | Functions host/package storage account | `<prefix>sts<env>` | `niobiuminvoicingststest` | `niobiumagentsstsprod` |
 | Application data storage account | `<prefix>std<env>` | `niobiuminvoicingstdtest` | `niobiumagentsstdprod` |
 
-For named service resources, Bicep composes the prefix, resource abbreviation
-and environment. A Service Bus namespace, when the service uses one, follows
+In the service-owned Invoicing and Driver modules, Bicep composes the prefix,
+resource abbreviation and environment. A Service Bus namespace, when the service uses one, follows
 `<prefix>-sb-<env>`. Storage account names concatenate the lowercase prefix,
 `st`, the purpose letter (`s` for host/package or `d` for data), and the
 environment. Check the complete name against Azure's length and uniqueness
@@ -32,3 +32,18 @@ service decisions. Driver uses West US 2, Azure's default Functions hostname,
 and a separate data account with zero application tables. For existing
 installations, use their resource names when binding or updating resources.
 Renaming a deployed resource is a separate migration. [Driver deployment configuration](https://github.com/niobium-nz/Niobium.AI.Agent.Driver/blob/7f266bb1fe3ac1ee322ce437fd12d94de2a3496a/README.md#azure-naming-and-resources)
+
+## Existing Azure Pipelines Function App job
+
+The `FunctionAppInfrastructure.yml` job takes a resource group and a single
+`appName`. Its `FunctionApp.bicep` uses that name for the site, strips a
+trailing `Func` when deriving the prefix, and appends `Plan`, `Insights`,
+`Logs`, `Store` and `Vault` to derive other names. It lowercases the storage
+account name. For example, `ordersFunc` yields `ordersstore`. Passing
+`niobiuminvoicing-func-test` yields `niobiuminvoicing-func-teststore`,
+which contains hyphens and exceeds Azure's 24-character storage account limit.
+
+Keep the existing job's deployed `appName` when updating its callers. Use
+the service-owned Bicep naming inputs for new deployments that follow the
+table above. Adopting those inputs in the legacy job requires a separate
+template and caller migration. [Pipeline job](../pipelines/jobs/FunctionAppInfrastructure.yml) · [Legacy Function App template](../bicep/FunctionApp.bicep)

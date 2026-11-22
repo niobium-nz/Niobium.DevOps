@@ -18,4 +18,7 @@ Use `rg-niobium-<service-slug>-<env>` for resource groups and
 `<prefix>-<abbr>-<env>` for named service resources such as Functions and
 vaults. Functions host/package storage uses `<prefix>sts<env>` and application
 data storage uses `<prefix>std<env>`. Use the service's approved slug and
-compact prefix in shared templates and deployment examples. [Azure resource naming](docs/azure-resource-naming.md)
+compact prefix in new service-owned Bicep modules and deployment examples.
+The existing Azure Pipelines Function App job takes a single `appName` and
+derives suffix-based names. Passing a hyphenated site name to that job yields
+an invalid storage account name. [Azure resource naming and legacy job behavior](docs/azure-resource-naming.md)
